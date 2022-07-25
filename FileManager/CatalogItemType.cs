@@ -3,5 +3,6 @@
 public enum CatalogItemType
 {
     Catalog,
-    File
+    File,
+    None
 }

@@ -91,20 +91,22 @@ public class OSNavigator : INavigator
         ClearForward();
     }
 
-    public void ToPath(string path, IMessageService messageService = null!)
+    public bool ToPath(string path, IMessageService messageService = null!)
     {
         var temp = Current;
 
-        if (!ToDirectory(path, messageService)) return;
+        if (!ToDirectory(path, messageService)) return false;
+
+        if (temp == Current) return true;
 
         AddBack(temp);
         if (temp != Current) ClearForward();
+
+        return true;
     }
 
     private bool ToDirectory(string path, IMessageService messageService)
     {
-        if (path == Current) return true;
-
         if (string.IsNullOrWhiteSpace(path))
         {
             if (messageService != null)

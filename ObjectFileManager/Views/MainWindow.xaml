@@ -31,7 +31,7 @@
                     <MenuItem Header="Папку" />
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Выход"/>
+                <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="Правка">
                 <MenuItem Header="Вырезать"/>
@@ -70,7 +70,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Width="20" Height="20"
-                    Command="{Binding ToPathCommand}"/>
+                    Command="{Binding ToPathCommand}"
+                    CommandParameter="{Binding PathLine}"/>
             <TextBox Text = "Поиск"
                      Margin="0,5,5,0"
                      HorizontalAlignment="Right"
@@ -95,7 +96,8 @@
                     <ColumnDefinition Width="3*" MinWidth="100"/>
                 </Grid.ColumnDefinitions>
                 <ListBox Grid.Column="0"
-                     HorizontalAlignment="Stretch">
+                         HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding Drives}">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
@@ -104,14 +106,23 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Height="25">
+                                <Grid.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick"
+                                                  Command="{Binding DataContext.ToPathCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                                                  CommandParameter="{Binding SelectedItem.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+                                </Grid.InputBindings>
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0"
+                                <TextBlock Text="{Binding Name}"
+                                           Grid.Row="0"
                                            Height="20"/>
                                 <ProgressBar Grid.Row="1"
-                                         Height="5"/>
+                                             Height="5"
+                                             Minimum="0"
+                                             Maximum="{Binding TotalSize}"
+                                             Value="{Binding FillSize, Mode=OneWay}"/>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -127,8 +138,10 @@
                       CanUserAddRows="False" 
                       CanUserResizeRows="False" 
                       GridLinesVisibility="None" 
-                      AutoGenerateColumns="False"
-                      HorizontalAlignment="Stretch" >
+                      AutoGenerateColumns="False" 
+                      ItemsSource="{Binding Items}" 
+                      HorizontalAlignment="Stretch"
+                          IsReadOnly="True">
                     <DataGrid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Открыть"/>
@@ -145,17 +158,27 @@
                             <Setter Property="BorderThickness" Value="0" />
                         </Style>
                     </DataGrid.Resources>
+                    <DataGrid.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick"
+                                      Command="{Binding DataContext.ToPathCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                      CommandParameter="{Binding SelectedItem.FullName, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                    </DataGrid.InputBindings>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Имя"
-                                        IsReadOnly="True"/>
+                                            Binding="{Binding Name}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
                         <DataGridTextColumn Header="Тип"
-                                        IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Размер, KB" 
-                                        IsReadOnly="True"/>
+                                            Binding="{Binding Type}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
+                        <DataGridTextColumn Header="Размер, KB"
+                                            Binding="{Binding Size, StringFormat=N0}"
+                                            ElementStyle="{StaticResource RightCell}"/>
                         <DataGridTextColumn Header="Дата создания"
-                                        IsReadOnly="True"/>
+                                            Binding="{Binding CreateDate}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
                         <DataGridTextColumn Header="Дата изменения"
-                                        IsReadOnly="True"/>
+                                            Binding="{Binding UpdateDate}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <GridSplitter Grid.Column="3"

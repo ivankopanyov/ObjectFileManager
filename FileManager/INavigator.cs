@@ -18,7 +18,7 @@ public interface INavigator
 
     bool UpExists { get; }
 
-    void ToPath(string path, IMessageService messageService = null!);
+    bool ToPath(string path, IMessageService messageService = null!);
 
     void ToUp(IMessageService messageService = null!);
 
