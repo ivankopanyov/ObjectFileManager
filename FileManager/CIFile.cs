@@ -4,7 +4,59 @@ public class CIFile : CatalogItem
 {
     private FileInfo _File;
 
-    public override string Name => _File.Name;
+    public override string Name
+    { 
+        get => _File.Name;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Имя файла не должно быть пустым!");
+                return;
+            }
+
+            foreach (char c in _Chars)
+                if (value.Contains(c))
+                {
+                    if (_MessageService is not null)
+                        _MessageService.ShowError($"Имя файла не должно содержать символы {string.Join(' ', _Chars)}");
+                    return;
+                }
+
+            var newName = Path.Combine(_File.Directory!.FullName, value);
+
+            if (File.Exists(newName) || Directory.Exists(newName))
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError($"Файл {newName} уже существует!");
+                return;
+            }
+
+            try
+            {
+                _File.MoveTo(newName);
+            }
+            catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Нет доступа для переименования файла!");
+                return;
+            }
+            catch (FileNotFoundException)
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Файл не найден!");
+                return;
+            }
+            catch
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Не удалось переименовать файл!");
+                return;
+            }
+        }
+    }
 
     public override string NameWithoutExtension => Path.GetFileNameWithoutExtension(_File.Name);
 
@@ -48,5 +100,5 @@ public class CIFile : CatalogItem
         }
     }
 
-    internal CIFile(FileInfo file) => _File = file;
+    internal CIFile(FileInfo file, IMessageService messageService = null!) : base(messageService) => _File = file;
 }

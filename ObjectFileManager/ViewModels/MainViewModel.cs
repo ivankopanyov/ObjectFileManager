@@ -3,6 +3,7 @@ using ObjectFileManager.Commands;
 using ObjectFileManager.Utilities;
 using ObjectFileManager.ViewModels.Base;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ObjectFileManager.ViewModels;
@@ -20,6 +21,8 @@ public class MainViewModel : ViewModel
     private ObservableCollection<Drive> _Drives; 
     
     private ObservableCollection<CatalogItem> _Items;
+
+    private CatalogItem _SelectedItem;
 
     public string PathLine
     {
@@ -43,6 +46,31 @@ public class MainViewModel : ViewModel
         get => _Items;
         set { _Items = value; OnPropertyChanged(); }
     }
+
+    public CatalogItem SelectedItem
+    {
+        get => _SelectedItem;
+        set 
+        { 
+            _SelectedItem = value; 
+            OnPropertyChanged();
+            OnPropertyChanged("SelectedItemName");
+            OnPropertyChanged("ShowInfo");
+        }
+    }
+
+    public string SelectedItemName
+    {
+        get => SelectedItem is not null ? SelectedItem.Name : null!;
+        set 
+        { 
+            SelectedItem.Name = value;
+            Items = new(_Items);
+            OnPropertyChanged("SelectedItem");
+        }
+    }
+
+    public Visibility ShowInfo => SelectedItem is null ? Visibility.Hidden : Visibility.Visible;
 
     public ICommand ToBackCommand => new RelayCommand((obj) =>
     {
@@ -93,7 +121,7 @@ public class MainViewModel : ViewModel
     {
         PathLine = _Navigator.Current;
         Title = _Navigator.CurrentName;
-        var items = Catalog.GetCatalogItems(_Navigator.Current, _MessageService);
+        var items = CatalogItem.GetCatalogItems(_Navigator.Current, _MessageService);
         Items = new(items);
     }
 }
