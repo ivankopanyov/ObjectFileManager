@@ -207,7 +207,7 @@
                         <TextBlock Text="Имя: "
                                    Grid.Column="0" Grid.Row="0"
                                    Margin="5,5,0,0"/>
-                        <TextBox Text="{Binding SelectedItemName}"
+                        <TextBox Text="{Binding SelectedItemName, Mode=TwoWay}"
                                  Grid.Column="1" Grid.Row="0"
                                  Margin="5,5,5,0"/>
                         <TextBlock Text="Путь: "
@@ -244,13 +244,13 @@
                         <TextBlock Text="Только чтение: "
                                    Grid.Column="0" Grid.Row="6"
                                    Margin="5,5,0,0"/>
-                        <CheckBox IsChecked="{Binding SelectedItem.ReadOnly, Mode=OneWay}"
+                        <CheckBox IsChecked="{Binding SelectedItemReadOnly, Mode=TwoWay}"
                                   Grid.Column="1" Grid.Row="6"
                                   Margin="5,5,5,0"/>
                         <TextBlock Text="Скрытый: "
                                    Grid.Column="0" Grid.Row="7"
                                    Margin="5,5,0,0"/>
-                        <CheckBox IsChecked="{Binding SelectedItem.Hidden, Mode=OneWay}"
+                        <CheckBox IsChecked="{Binding SelectedItemHidden, Mode=TwoWay}"
                                   Grid.Column="1" Grid.Row="7"
                                   Margin="5,5,5,0"/>
                     </Grid>

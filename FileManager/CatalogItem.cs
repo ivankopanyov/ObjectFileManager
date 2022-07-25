@@ -24,11 +24,75 @@ public abstract class CatalogItem
 
     public abstract DateTime UpdateDate { get; }
 
-    public bool ReadOnly { get; }
+    public bool ReadOnly
+    {
+        get
+        {
+            try
+            {
+                return HasAttribute(FileAttributes.ReadOnly);
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-    public bool Hidden { get; }
+        set
+        {
+            try
+            {
+                ChangeAttribute(FileAttributes.ReadOnly, value);
+            }
+            catch
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Изменение атрибутов не доступно!");
+            }
+        }
+    }
+
+    public bool Hidden
+    {
+        get
+        {
+            try
+            {
+                return HasAttribute(FileAttributes.Hidden);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        set
+        {
+            try
+            {
+                ChangeAttribute(FileAttributes.Hidden, value);
+            }
+            catch
+            {
+                if (_MessageService is not null)
+                    _MessageService.ShowError("Изменение атрибутов не доступно!");
+            }
+        }
+    }
 
     public CatalogItem(IMessageService messageService) => _MessageService = messageService;
+
+    protected bool HasAttribute(FileAttributes attribute) =>
+        (File.GetAttributes(FullName) & attribute) == attribute;
+
+    protected void ChangeAttribute(FileAttributes attribute, bool value)
+    {
+        FileAttributes attributes = File.GetAttributes(FullName);
+        if ((attributes & attribute) == attribute && !value)
+            File.SetAttributes(FullName, attributes & ~attribute);
+        else if ((attributes & attribute) != attribute && value)
+            File.SetAttributes(FullName, File.GetAttributes(FullName) | attribute);
+    }
 
     public static CatalogItemType GetItemType(string path)
     {

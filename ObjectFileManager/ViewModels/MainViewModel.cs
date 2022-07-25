@@ -55,6 +55,8 @@ public class MainViewModel : ViewModel
             _SelectedItem = value; 
             OnPropertyChanged();
             OnPropertyChanged("SelectedItemName");
+            OnPropertyChanged("SelectedItemReadOnly");
+            OnPropertyChanged("SelectedItemHidden");
             OnPropertyChanged("ShowInfo");
         }
     }
@@ -68,6 +70,18 @@ public class MainViewModel : ViewModel
             Items = new(_Items);
             OnPropertyChanged("SelectedItem");
         }
+    }
+
+    public bool SelectedItemReadOnly
+    {
+        get => SelectedItem is not null ? SelectedItem.ReadOnly : false;
+        set { SelectedItem.ReadOnly = value; }
+    }
+
+    public bool SelectedItemHidden
+    {
+        get => SelectedItem is not null ? SelectedItem.Hidden : false;
+        set { SelectedItem.Hidden = value; }
     }
 
     public Visibility ShowInfo => SelectedItem is null ? Visibility.Hidden : Visibility.Visible;

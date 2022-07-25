@@ -114,5 +114,7 @@ public class CICatalog : CatalogItem
     }
 
     internal CICatalog(DirectoryInfo directory, IMessageService messageService = null!) : base(messageService) => _Directory = directory;
+
+
 }
 
