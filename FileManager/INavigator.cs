@@ -14,13 +14,17 @@ public interface INavigator
 
     bool ForwardExists { get; }
 
-    bool ToPath(string path, bool showMessage = true);
+    string Up { get; }
 
-    void ToUp();
+    bool UpExists { get; }
 
-    void ToBack();
+    void ToPath(string path, IMessageService messageService = null!);
 
-    void ToForward();
+    void ToUp(IMessageService messageService = null!);
+
+    void ToBack(IMessageService messageService = null!);
+
+    void ToForward(IMessageService messageService = null!);
 
     void ClearBack();
 

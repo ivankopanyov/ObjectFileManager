@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:ObjectFileManager.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" 
-        Height="450" Width="800">
+        Title="{Binding Title}"
+        Height="450" Width="800"
+        MinHeight="200" MinWidth="350">
     <Window.DataContext>
         <viewModels:MainViewModel/>
     </Window.DataContext>
@@ -41,30 +42,35 @@
             </MenuItem>
         </Menu>
         <Grid>
-            <Button Content="←" 
-                Margin="5,5,0,0" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Top" 
-                Width="20" Height="20"/>
-            <Button Content="→" 
-                Margin="30,5,0,0" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Top" 
-                Width="20" Height="20"/>
-            <Button Content="↑" 
-                Margin="55,5,0,0" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Top" 
-                Width="20" Height="20"/>
-            <TextBox Margin="80,5,235,0" 
-                    VerticalAlignment="Top" 
-                    TextWrapping="NoWrap" 
-                    Height="20"/>
-            <Button Content="→" 
-                Margin="0,5,210,0" 
-                HorizontalAlignment="Right" 
-                VerticalAlignment="Top" 
-                Width="20" Height="20"/>
+            <Button Content="←"
+                    Margin="5,5,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="20" Height="20"
+                    Command="{Binding ToBackCommand}"/>
+            <Button Content="→"
+                    Margin="30,5,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="20" Height="20"
+                    Command="{Binding ToForwardCommand}"/>
+            <Button Content="↑"
+                    Margin="55,5,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="20" Height="20"
+                    Command="{Binding ToUpCommand}"/>
+            <TextBox Text="{Binding PathLine}"
+                     Margin="80,5,235,0"
+                     VerticalAlignment="Top"
+                     TextWrapping="NoWrap"
+                     Height="20"/>
+            <Button Content="→"
+                    Margin="0,5,210,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Width="20" Height="20"
+                    Command="{Binding ToPathCommand}"/>
             <TextBox Text = "Поиск"
                      Margin="0,5,5,0"
                      HorizontalAlignment="Right"
