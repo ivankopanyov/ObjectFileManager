@@ -29,8 +29,10 @@
                           Command="{Binding OpenCommand}"
                           CommandParameter="{Binding SelectedItem.FullName}"/>
                 <MenuItem Header="Создать">
-                    <MenuItem Header="Файл" />
-                    <MenuItem Header="Папку" />
+                    <MenuItem Header="Файл"
+                              Command="{Binding CreateFileCommand}"/>
+                    <MenuItem Header="Папку"
+                              Command="{Binding CreateCatalogCommand}"/>
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
@@ -89,7 +91,7 @@
                    VerticalAlignment="Bottom" 
                    TextWrapping="NoWrap" 
                    Width="66" Height="20"/>
-            <TextBlock Margin="76,0,5,5" 
+            <TextBlock Text="{Binding Items.Count}" Margin="76,0,5,5"
                        VerticalAlignment="Bottom" 
                        TextWrapping="NoWrap" 
                        Height="20"/>

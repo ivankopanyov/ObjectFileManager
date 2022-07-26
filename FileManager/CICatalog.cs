@@ -121,7 +121,7 @@ public class CICatalog : CatalogItem
 
         try
         {
-            _Directory.Delete();
+            _Directory.Delete(true);
             return true;
         }
         catch

@@ -149,4 +149,61 @@ public abstract class CatalogItem
     {
         throw new NotImplementedException();
     }
+
+    public static bool CreateFile(string path, IMessageService messageService = null!)
+    {
+        if (!Directory.Exists(path))
+        {
+            if (messageService is not null)
+                messageService.ShowError($"Не удалось создать файл!");
+            return false;
+        }
+
+        var name = "Новый текстовый файл";
+        var exstansion = ".txt";
+        var newName = name;
+
+        for (int i = 2; File.Exists(Path.Combine(path, $"{newName}{exstansion}")); i++)
+            newName = $"{name} ({i})";
+
+        try
+        {
+            File.Create(Path.Combine(path, $"{newName}{exstansion}"));
+            return true;
+        }
+        catch
+        {
+            if (messageService is not null)
+                messageService.ShowError($"Не удалось создать файл!");
+            return false;
+        }
+    }
+
+    public static bool CreateCatalog(string path, IMessageService messageService = null!)
+    {
+        if (!Directory.Exists(path))
+        {
+            if (messageService is not null)
+                messageService.ShowError($"Не удалось создать папку!");
+            return false;
+        }
+
+        var name = "Новая папка";
+        var newName = name;
+
+        for (int i = 2; Directory.Exists(Path.Combine(path, newName)); i++)
+            newName = $"{name} ({i})";
+
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(path, newName));
+            return true;
+        }
+        catch
+        {
+            if (messageService is not null)
+                messageService.ShowError($"Не удалось создать папку!");
+            return false;
+        }
+    }
 }

@@ -136,6 +136,18 @@ public class MainViewModel : ViewModel
     },
     (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
 
+    public ICommand CreateFileCommand => new RelayCommand((obj) =>
+    {
+        if (CatalogItem.CreateFile(_Navigator.Current))
+            Update();
+    });
+
+    public ICommand CreateCatalogCommand => new RelayCommand((obj) =>
+    {
+        if (CatalogItem.CreateCatalog(_Navigator.Current))
+            Update();
+    });
+
     public ICommand ExitCommand => new RelayCommand((obj) => App.Current.Shutdown());
 
     public MainViewModel()
