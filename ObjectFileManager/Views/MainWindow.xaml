@@ -25,7 +25,9 @@
         <Menu DockPanel.Dock="Top" 
               Background="White">
             <MenuItem Header="Файл">
-                <MenuItem Header="Открыть"/>
+                <MenuItem Header="Открыть"
+                          Command="{Binding OpenCommand}"
+                          CommandParameter="{Binding SelectedItem.FullName}"/>
                 <MenuItem Header="Создать">
                     <MenuItem Header="Файл" />
                     <MenuItem Header="Папку" />
@@ -34,11 +36,15 @@
                 <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="Правка">
-                <MenuItem Header="Вырезать"/>
-                <MenuItem Header="Копировать"/>
-                <MenuItem Header="Вставить"/>
+                <MenuItem Header="Вырезать"
+                          Command="{Binding CutCommand}"/>
+                <MenuItem Header="Копировать"
+                          Command="{Binding CopyCommand}"/>
+                <MenuItem Header="Вставить"
+                          Command="{Binding PasteCommand}"/>
                 <Separator />
-                <MenuItem Header="Удалить"/>
+                <MenuItem Header="Удалить"
+                          Command="{Binding RemoveCommand}"/>
             </MenuItem>
         </Menu>
         <Grid>
@@ -133,6 +139,7 @@
                               HorizontalAlignment="Center"
                               VerticalAlignment="Stretch"/>
                 <DataGrid Grid.Column="2"
+                          Name="ContentDataGrid"
                           Background="White"
                           CanUserAddRows="False"
                           CanUserResizeRows="False"
@@ -140,17 +147,24 @@
                           AutoGenerateColumns="False"
                           ItemsSource="{Binding Items}"
                           SelectedItem="{Binding SelectedItem}"
+                          SelectionMode="Single"
                           HorizontalAlignment="Stretch"
                           IsReadOnly="True">
                     <DataGrid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Открыть"/>
+                            <MenuItem Header="Открыть"
+                                      Command="{Binding OpenCommand}"
+                                      CommandParameter="{Binding SelectedItem.FullName}"/>
                             <Separator />
-                            <MenuItem Header="Вырезать"/>
-                            <MenuItem Header="Копировать"/>
-                            <MenuItem Header="Вставить"/>
+                            <MenuItem Header="Вырезать"
+                                      Command="{Binding CutCommand}"/>
+                            <MenuItem Header="Копировать"
+                                      Command="{Binding CopyCommand}"/>
+                            <MenuItem Header="Вставить"
+                                      Command="{Binding PasteCommand}"/>
                             <Separator/>
-                            <MenuItem Header="Удалить"/>
+                            <MenuItem Header="Удалить"
+                                      Command="{Binding RemoveCommand}"/>
                         </ContextMenu>
                     </DataGrid.ContextMenu>
                     <DataGrid.Resources>
@@ -207,7 +221,7 @@
                         <TextBlock Text="Имя: "
                                    Grid.Column="0" Grid.Row="0"
                                    Margin="5,5,0,0"/>
-                        <TextBox Text="{Binding SelectedItemName, Mode=TwoWay}"
+                        <TextBox Text="{Binding SelectedItemName}"
                                  Grid.Column="1" Grid.Row="0"
                                  Margin="5,5,5,0"/>
                         <TextBlock Text="Путь: "
@@ -244,13 +258,13 @@
                         <TextBlock Text="Только чтение: "
                                    Grid.Column="0" Grid.Row="6"
                                    Margin="5,5,0,0"/>
-                        <CheckBox IsChecked="{Binding SelectedItemReadOnly, Mode=TwoWay}"
+                        <CheckBox IsChecked="{Binding SelectedItemReadOnly}"
                                   Grid.Column="1" Grid.Row="6"
                                   Margin="5,5,5,0"/>
                         <TextBlock Text="Скрытый: "
                                    Grid.Column="0" Grid.Row="7"
                                    Margin="5,5,0,0"/>
-                        <CheckBox IsChecked="{Binding SelectedItemHidden, Mode=TwoWay}"
+                        <CheckBox IsChecked="{Binding SelectedItemHidden}"
                                   Grid.Column="1" Grid.Row="7"
                                   Margin="5,5,5,0"/>
                     </Grid>

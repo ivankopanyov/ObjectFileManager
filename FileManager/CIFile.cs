@@ -101,4 +101,21 @@ public class CIFile : CatalogItem
     }
 
     internal CIFile(FileInfo file, IMessageService messageService = null!) : base(messageService) => _File = file;
+
+    public override bool Remove()
+    {
+        if (!_File.Exists) return true;
+
+        try
+        {
+            _File.Delete();
+            return true;
+        }
+        catch
+        {
+            if (_MessageService is not null)
+                _MessageService.ShowError("Нет доступа для удаления файла!");
+            return false;
+        }
+    }
 }

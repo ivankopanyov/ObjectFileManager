@@ -14,6 +14,8 @@ public class MainViewModel : ViewModel
 
     private INavigator _Navigator;
 
+    private IClipboard _Clipboard;
+
     private string _PathLine;
 
     private string _Title;
@@ -107,19 +109,32 @@ public class MainViewModel : ViewModel
     },
     (obj) => _Navigator.UpExists);
 
-    public ICommand ToPathCommand => new RelayCommand((obj) =>
+    public ICommand ToPathCommand => new RelayCommand((obj) => Open(obj));
+
+    public ICommand OpenCommand => new RelayCommand((obj) => Open(obj),
+        (obj) => SelectedItem is not null);
+
+    public ICommand CutCommand => new RelayCommand((obj) => _Clipboard.Cut(SelectedItem),
+        (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
+
+    public ICommand CopyCommand => new RelayCommand((obj) => _Clipboard.Copy(SelectedItem),
+        (obj) => SelectedItem is not null); 
+    
+    public ICommand PasteCommand => new RelayCommand((obj) =>
     {
-        if (obj.GetType() != typeof(string)) return;
+        _Clipboard.Paste(SelectedItem is null ? _Navigator.Current : SelectedItem.FullName, _MessageService);
+        Update();
+    },
+    (obj) => SelectedItem is null || SelectedItem.GetType() == typeof(CICatalog));
 
-        var path = (string)obj;
-        var type = CatalogItem.GetItemType(path);
-
-        if (type != CatalogItemType.File && _Navigator.ToPath((string)obj, _MessageService))
-        {
-            Update();
+    public ICommand RemoveCommand => new RelayCommand((obj) =>
+    {
+        if (!_MessageService.ShowYesNo($"Вы уверены, что хотите удалить {SelectedItem.Name}?"))
             return;
-        }
-    });
+
+        if (SelectedItem.Remove()) Update();
+    },
+    (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
 
     public ICommand ExitCommand => new RelayCommand((obj) => App.Current.Shutdown());
 
@@ -127,6 +142,7 @@ public class MainViewModel : ViewModel
     {
         _MessageService = new MessageService();
         _Navigator = OSNavigator.Navigator;
+        _Clipboard = WindowsClipboard.Clipboard;
         Drives = new(Drive.GetDrives());
         Update();
     }
@@ -137,5 +153,19 @@ public class MainViewModel : ViewModel
         Title = _Navigator.CurrentName;
         var items = CatalogItem.GetCatalogItems(_Navigator.Current, _MessageService);
         Items = new(items);
+    }
+
+    private void Open(object obj)
+    {
+        if (obj is null || obj.GetType() != typeof(string)) return;
+
+        var path = (string)obj;
+        var type = CatalogItem.GetItemType(path);
+
+        if (type != CatalogItemType.File && _Navigator.ToPath((string)obj, _MessageService))
+        {
+            Update();
+            return;
+        }
     }
 }

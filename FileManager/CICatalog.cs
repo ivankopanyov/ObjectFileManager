@@ -113,7 +113,24 @@ public class CICatalog : CatalogItem
         }
     }
 
-    internal CICatalog(DirectoryInfo directory, IMessageService messageService = null!) : base(messageService) => _Directory = directory;
+    internal CICatalog(DirectoryInfo directory, IMessageService messageService = null!) : base(messageService) => _Directory = directory; 
+
+    public override bool Remove()
+    {
+        if (!_Directory.Exists) return true;
+
+        try
+        {
+            _Directory.Delete();
+            return true;
+        }
+        catch
+        {
+            if (_MessageService is not null)
+                _MessageService.ShowError("Нет доступа для удаления директории!");
+            return false;
+        }
+    }
 
 
 }

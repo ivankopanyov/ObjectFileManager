@@ -82,6 +82,8 @@ public abstract class CatalogItem
 
     public CatalogItem(IMessageService messageService) => _MessageService = messageService;
 
+    public abstract bool Remove();
+
     protected bool HasAttribute(FileAttributes attribute) =>
         (File.GetAttributes(FullName) & attribute) == attribute;
 
