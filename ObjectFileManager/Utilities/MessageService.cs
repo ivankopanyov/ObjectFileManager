@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using FileManager;
+using FileManager.Information;
 
 namespace ObjectFileManager.Utilities;
 

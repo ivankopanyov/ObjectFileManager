@@ -1,4 +1,4 @@
-﻿namespace FileManager;
+﻿namespace FileManager.Information;
 
 public interface IMessageService
 {

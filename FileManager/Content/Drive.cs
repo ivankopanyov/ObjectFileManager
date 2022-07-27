@@ -1,4 +1,4 @@
-﻿namespace FileManager;
+﻿namespace FileManager.Content;
 
 public class Drive
 {

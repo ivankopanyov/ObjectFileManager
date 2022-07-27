@@ -1,59 +1,42 @@
-﻿namespace FileManager;
+﻿namespace FileManager.Content;
 
-public class CICatalog : CatalogItem
+internal sealed class CICatalog : CatalogItem
 {
     private DirectoryInfo _Directory;
 
     public override string Name
-    { 
+    {
         get => _Directory.Name;
-        set 
+        set
         {
             if (string.IsNullOrWhiteSpace(value))
-            {
-                if (_MessageService is not null)
-                    _MessageService.ShowError("Имя директории не должно быть пустым!");
-                return;
-            }
+                throw new ArgumentNullException(nameof(value));
 
             foreach (char c in _Chars)
                 if (value.Contains(c))
-                {
-                    if (_MessageService is not null)
-                        _MessageService.ShowError($"Имя диретории не должно содержать символы {string.Join(' ', _Chars)}");
-                    return;
-                }
+                    throw new ArgumentException($"Имя файла не должно содержать символы {string.Join(' ', _Chars)}");
 
             var newName = Path.Combine(_Directory.Parent!.FullName, value);
 
             if (File.Exists(newName) || Directory.Exists(newName))
-            {
-                if (_MessageService is not null)
-                    _MessageService.ShowError($"Директория {newName} уже существует!");
-                return;
-            }
+                throw new InvalidOperationException($"Файл {newName} уже существует!");
 
             try
             {
                 _Directory.MoveTo(newName);
             }
+
             catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
             {
-                if (_MessageService is not null)
-                    _MessageService.ShowError("Нет доступа для переименования директории!");
-                return;
+                throw new UnauthorizedAccessException("Нет доступа для переименования папки!");
             }
             catch (DirectoryNotFoundException)
             {
-                if (_MessageService is not null)
-                    _MessageService.ShowError("Директория не найден!");
-                return;
+                throw new DirectoryNotFoundException("Папка не найден!");
             }
             catch
             {
-                if (_MessageService is not null)
-                    _MessageService.ShowError("Не удалось переименовать директорию!");
-                return;
+                throw new InvalidOperationException("Не удалось переименовать папку!");
             }
         }
     }
@@ -64,7 +47,9 @@ public class CICatalog : CatalogItem
 
     public override string FullName => Path.GetFullPath(_Directory.FullName);
 
-    public override string Type => "Папка с файлами";
+    public override CatalogItemType Type => CatalogItemType.Catalog;
+
+    public override string DisplayType => "Папка с файлами";
 
     public override long? Size => null;
 
@@ -113,22 +98,21 @@ public class CICatalog : CatalogItem
         }
     }
 
-    internal CICatalog(DirectoryInfo directory, IMessageService messageService = null!) : base(messageService) => _Directory = directory; 
+    public override bool Exists => Directory.Exists(FullName);
 
-    public override bool Remove()
+    public CICatalog(DirectoryInfo directory) => _Directory = directory;
+
+    public override void Remove()
     {
-        if (!_Directory.Exists) return true;
+        if (!_Directory.Exists) return;
 
         try
         {
             _Directory.Delete(true);
-            return true;
         }
         catch
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError("Нет доступа для удаления директории!");
-            return false;
+            throw new UnauthorizedAccessException("Нет доступа для удаления директории!");
         }
     }
 

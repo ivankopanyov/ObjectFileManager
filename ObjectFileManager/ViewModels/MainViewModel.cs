@@ -1,30 +1,34 @@
-﻿using FileManager;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using FileManager;
+using FileManager.Content;
+using FileManager.Navigation;
 using ObjectFileManager.Commands;
 using ObjectFileManager.Utilities;
 using ObjectFileManager.ViewModels.Base;
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
 
 namespace ObjectFileManager.ViewModels;
 
 public class MainViewModel : ViewModel
 {
-    private IMessageService _MessageService;
+    private MessageService _MessageService = new MessageService();
 
-    private INavigator _Navigator;
-
-    private IClipboard _Clipboard;
+    private FMLogic _FileManager;
 
     private string _PathLine;
 
     private string _Title;
 
-    private ObservableCollection<Drive> _Drives; 
-    
+    private ObservableCollection<Drive> _Drives;
+
     private ObservableCollection<CatalogItem> _Items;
 
     private CatalogItem _SelectedItem;
+
+    private string _FilterText;
 
     public string PathLine
     {
@@ -52,9 +56,9 @@ public class MainViewModel : ViewModel
     public CatalogItem SelectedItem
     {
         get => _SelectedItem;
-        set 
-        { 
-            _SelectedItem = value; 
+        set
+        {
+            _SelectedItem = value;
             OnPropertyChanged();
             OnPropertyChanged("SelectedItemName");
             OnPropertyChanged("SelectedItemReadOnly");
@@ -63,12 +67,44 @@ public class MainViewModel : ViewModel
         }
     }
 
+    public string FilterText
+    {
+        get => _FilterText;
+        set
+        {
+            _FilterText = value;
+
+            if (string.IsNullOrWhiteSpace(_FilterText))
+            {
+                Items = new(_FileManager.ItemsList);
+                return;
+            }
+
+            try
+            {
+                Items = new(_FileManager.Find(_FilterText, true));
+            }
+            catch
+            {
+                FilterText = string.Empty;
+                return;
+            }
+        }
+    }
+
     public string SelectedItemName
     {
         get => SelectedItem is not null ? SelectedItem.Name : null!;
-        set 
-        { 
-            SelectedItem.Name = value;
+        set
+        {
+            try
+            {
+                _FileManager.Rename(SelectedItem, value);
+            }
+            catch
+            {
+                return;
+            }
             Items = new(_Items);
             OnPropertyChanged("SelectedItem");
         }
@@ -77,107 +113,100 @@ public class MainViewModel : ViewModel
     public bool SelectedItemReadOnly
     {
         get => SelectedItem is not null ? SelectedItem.ReadOnly : false;
-        set { SelectedItem.ReadOnly = value; }
+        set => _FileManager.ChangeAttribute(SelectedItem, FileAttributes.ReadOnly, value);
     }
 
     public bool SelectedItemHidden
     {
         get => SelectedItem is not null ? SelectedItem.Hidden : false;
-        set { SelectedItem.Hidden = value; }
+        set => _FileManager.ChangeAttribute(SelectedItem, FileAttributes.Hidden, value);
     }
 
     public Visibility ShowInfo => SelectedItem is null ? Visibility.Hidden : Visibility.Visible;
 
     public ICommand ToBackCommand => new RelayCommand((obj) =>
     {
-        _Navigator.ToBack(_MessageService);
-        Update();
+        Update(_FileManager.ChangeDirectory(NavigatorDirection.Back));
     },
-    (obj) => _Navigator.BackExists);
+    (obj) => _FileManager.BackExists);
 
     public ICommand ToForwardCommand => new RelayCommand((obj) =>
     {
-        _Navigator.ToForward(_MessageService);
-        Update();
+        Update(_FileManager.ChangeDirectory(NavigatorDirection.Forward));
     },
-    (obj) => _Navigator.ForwardExists);
+    (obj) => _FileManager.ForwardExists);
 
     public ICommand ToUpCommand => new RelayCommand((obj) =>
     {
-        _Navigator.ToUp(_MessageService);
-        Update();
+        Update(_FileManager.ChangeDirectory(NavigatorDirection.Up));
     },
-    (obj) => _Navigator.UpExists);
+    (obj) => _FileManager.UpExists);
 
-    public ICommand ToPathCommand => new RelayCommand((obj) => Open(obj));
+    public ICommand ToPathCommand => new RelayCommand((obj) =>
+    {
+        if (obj is null || obj.GetType() != typeof(string) || CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
+            return;
 
-    public ICommand OpenCommand => new RelayCommand((obj) => Open(obj),
-        (obj) => SelectedItem is not null);
+        Update(_FileManager.ChangeDirectory((string)obj));
+    });
 
-    public ICommand CutCommand => new RelayCommand((obj) => _Clipboard.Cut(SelectedItem),
+    public ICommand OpenCommand => new RelayCommand((obj) =>
+    {
+        if (obj is null || obj.GetType() != typeof(string) || CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
+            return;
+
+        Update(_FileManager.ChangeDirectory((string)obj));
+    },
+    (obj) => SelectedItem is not null);
+
+    public ICommand CutCommand => new RelayCommand((obj) =>
+        _FileManager.Cut(SelectedItem, WindowsClipboard.Clipboard),
         (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
 
-    public ICommand CopyCommand => new RelayCommand((obj) => _Clipboard.Copy(SelectedItem),
-        (obj) => SelectedItem is not null); 
-    
+    public ICommand CopyCommand => new RelayCommand((obj) =>
+        _FileManager.Copy(SelectedItem, WindowsClipboard.Clipboard),
+        (obj) => SelectedItem is not null);
+
     public ICommand PasteCommand => new RelayCommand((obj) =>
     {
-        _Clipboard.Paste(SelectedItem is null ? _Navigator.Current : SelectedItem.FullName, _MessageService);
-        Update();
+        _FileManager.Paste(WindowsClipboard.Clipboard, SelectedItem is null ? _FileManager.CurrentDirectory : SelectedItem.FullName);
+        Items = new(_FileManager.ItemsList);
     },
-    (obj) => SelectedItem is null || SelectedItem.GetType() == typeof(CICatalog));
+    (obj) => WindowsClipboard.Clipboard.ContainsFiles && (SelectedItem is null || 
+        (SelectedItem.Type == CatalogItemType.Catalog && SelectedItem.Exists)));
 
     public ICommand RemoveCommand => new RelayCommand((obj) =>
     {
-        if (!_MessageService.ShowYesNo($"Вы уверены, что хотите удалить {SelectedItem.Name}?"))
-            return;
-
-        if (SelectedItem.Remove()) Update();
+        _FileManager.Remove(SelectedItem);
+        Items = new(_FileManager.ItemsList);
     },
     (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
 
     public ICommand CreateFileCommand => new RelayCommand((obj) =>
     {
-        if (CatalogItem.CreateFile(_Navigator.Current))
-            Update();
+        _FileManager.CreateFile();
+        Items = new(_FileManager.ItemsList);
     });
 
     public ICommand CreateCatalogCommand => new RelayCommand((obj) =>
     {
-        if (CatalogItem.CreateCatalog(_Navigator.Current))
-            Update();
+        _FileManager.CreateCatalog();
+        Items = new(_FileManager.ItemsList);
     });
 
     public ICommand ExitCommand => new RelayCommand((obj) => App.Current.Shutdown());
 
     public MainViewModel()
     {
-        _MessageService = new MessageService();
-        _Navigator = OSNavigator.Navigator;
-        _Clipboard = WindowsClipboard.Clipboard;
-        Drives = new(Drive.GetDrives());
-        Update();
+        _FileManager = new FMLogic(OSNavigator.Navigator, _MessageService);
+        Drives = new(_FileManager.Drives);
+        Update(_FileManager.CurrentDirectory);
     }
 
-    private void Update()
+    private void Update(string path)
     {
-        PathLine = _Navigator.Current;
-        Title = _Navigator.CurrentName;
-        var items = CatalogItem.GetCatalogItems(_Navigator.Current, _MessageService);
-        Items = new(items);
-    }
-
-    private void Open(object obj)
-    {
-        if (obj is null || obj.GetType() != typeof(string)) return;
-
-        var path = (string)obj;
-        var type = CatalogItem.GetItemType(path);
-
-        if (type != CatalogItemType.File && _Navigator.ToPath((string)obj, _MessageService))
-        {
-            Update();
-            return;
-        }
+        PathLine = path;
+        Title = new DirectoryInfo(path).Name;
+        Items = new(_FileManager.ItemsList);
     }
 }

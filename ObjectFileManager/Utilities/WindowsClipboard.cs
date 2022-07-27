@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
-using FileManager;
+using FileManager.Memory;
 
 namespace ObjectFileManager.Utilities;
 
@@ -15,28 +15,131 @@ public class WindowsClipboard : IClipboard
 
     private WindowsClipboard() { }
 
-    public bool ContainsItems => System.Windows.Clipboard.ContainsFileDropList();
+    public bool ContainsFiles => System.Windows.Clipboard.ContainsFileDropList();
 
-    public void Cut(CatalogItem item)
+    public void Cut(string path)
     {
-        if (item is null) return;
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentNullException(nameof(path));
 
-        Cut(new StringCollection() { item.FullName });
+        if (!File.Exists(path) && !Directory.Exists(path))
+            throw new FileNotFoundException($"Источник {path} не найден!");
+
+        CutProcess(new() { path });
     }
 
-    public void Cut(IEnumerable<CatalogItem> items)
+    public void Cut(IEnumerable<string> paths)
     {
-        if (items is null) return;
+        if (paths is null)
+            throw new ArgumentNullException(nameof(paths));
 
-        var list = new StringCollection();
+        StringCollection collection = new();
 
-        foreach (var item in items) 
-            list.Add(item.FullName);
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("Перечисление содержит пустой элемент.");
+            else if (!File.Exists(path) && !Directory.Exists(path))
+                throw new FileNotFoundException($"Источник {path} не найден!");
 
-        Cut(list);
+            collection.Add(path);
+        }
+
+        if (collection.Count == 0)
+            throw new ArgumentNullException(nameof(paths));
+
+        CutProcess(collection);
     }
 
-    private void Cut(StringCollection items)
+    public void Copy(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentNullException(nameof(path));
+
+        if (!File.Exists(path) && !Directory.Exists(path))
+            throw new FileNotFoundException($"Источник {path} не найден!");
+
+        Clear();
+        System.Windows.Clipboard.SetFileDropList(new() { path });
+    }
+
+    public void Copy(IEnumerable<string> paths)
+    {
+        if (paths is null)
+            throw new ArgumentNullException(nameof(paths));
+
+        StringCollection collection = new();
+
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("Перечисление содержит пустой элемент.");
+            else if (!File.Exists(path) && !Directory.Exists(path))
+                throw new FileNotFoundException($"Источник {path} не найден!");
+
+            collection.Add(path);
+        }
+
+        if (collection.Count == 0)
+            throw new ArgumentNullException(nameof(paths));
+
+        Clear();
+        System.Windows.Clipboard.SetFileDropList(collection);
+    }
+
+    public void Paste(string path)
+    {
+        if (!ContainsFiles)
+            throw new ArgumentNullException(nameof(path));
+
+        if (!Directory.Exists(path))
+            throw new DirectoryNotFoundException($"Путь {path} не найден.");
+
+        var files = System.Windows.Clipboard.GetFileDropList();
+
+        bool move = false;
+
+        var dataDropEffect = System.Windows.Clipboard.GetData("Preferred DropEffect");
+        if (dataDropEffect != null)
+        {
+            using var dropEffect = (MemoryStream)dataDropEffect;
+            byte[] moveEffect = new byte[4];
+            dropEffect.Read(moveEffect, 0, moveEffect.Length);
+            move = BitConverter.ToInt32(moveEffect, 0) == 2;
+        }
+
+        foreach (var file in files)
+            if (File.Exists(file))
+            {
+                try
+                {
+                    PasteFile(file, Path.Combine(path, new FileInfo(file).Name), move);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    throw ex;
+                }
+            }
+            else if (Directory.Exists(file))
+            {
+                try
+                {
+                    PasteDirectory(file, Path.Combine(path, new DirectoryInfo(file).Name), move);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    throw ex;
+                }
+            }
+            else
+                throw new InvalidOperationException("Не удалось скопировать файлы!");
+
+        if (move) Clear();
+    }
+
+    public void Clear() => System.Windows.Clipboard.Clear();
+
+    private void CutProcess(StringCollection items)
     {
         var moveEffect = new byte[] { 2, 0, 0, 0 };
         using var dropEffect = new MemoryStream();
@@ -50,62 +153,7 @@ public class WindowsClipboard : IClipboard
         System.Windows.Clipboard.SetDataObject(data, true);
     }
 
-    public void Copy(CatalogItem item)
-    {
-        if (item is null) return;
-        var list = new StringCollection() { item.FullName };
-        Clear();
-        System.Windows.Clipboard.SetFileDropList(list);
-    }
-
-    public void Copy(IEnumerable<CatalogItem> items)
-    {
-        if (items is null) return;
-        var list = new StringCollection();
-
-        foreach (var item in items)
-            list.Add(item.FullName);
-
-        Clear();
-        System.Windows.Clipboard.SetFileDropList(list);
-    }
-
-    public void Paste(string path, IMessageService messageService = null!)
-    {
-        var items = System.Windows.Clipboard.GetFileDropList();
-        if (items == null || items.Count == 0) return;
-
-        bool move = false;
-
-        var dataDropEffect = System.Windows.Clipboard.GetData("Preferred DropEffect");
-        if (dataDropEffect != null)
-        {
-            MemoryStream dropEffect = (MemoryStream)dataDropEffect;
-            byte[] moveEffect = new byte[4];
-            dropEffect.Read(moveEffect, 0, moveEffect.Length);
-            move = BitConverter.ToInt32(moveEffect, 0) == 2;
-        }
-
-        StringCollection list = new();
-
-        foreach (var item in items)
-            if (File.Exists(item))
-            {
-                if (!PasteFile(item, Path.Combine(path, new FileInfo(item).Name), move) && messageService is not null)
-                    messageService.ShowError($"Не удалось скопировать файл {item}.");
-            }
-            else if (Directory.Exists(item))
-            {
-                if (!PasteDirectory(item, Path.Combine(path, new DirectoryInfo(item).Name), move) && messageService is not null)
-                    messageService.ShowError($"Не удалось скопировать директорию {item}.");
-            }
-
-        if (move) Clear();
-    }
-
-    public void Clear() => System.Windows.Clipboard.Clear();
-
-    private bool PasteFile(string source, string dest, bool isMove)
+    private void PasteFile(string source, string dest, bool isMove)
     {
         var file = new FileInfo(dest);
         var extansion = file.Extension;
@@ -120,33 +168,29 @@ public class WindowsClipboard : IClipboard
         {
             if (isMove) File.Move(source, name);
             else File.Copy(source, name);
-
-            return true;
         }
         catch
         {
-            return false;
+            throw new InvalidOperationException($"Не удалось скопировать файл {source}");
         }
     }
 
-    private bool PasteDirectory(string source, string dest, bool isMove)
+    private void PasteDirectory(string source, string dest, bool isMove)
     {
-        if (source == dest) return true;
+        if (source == dest) return;
 
         try
         {
             if (isMove) Directory.Move(source, dest);
             else CopyDirectory(source, dest);
-
-            return true;
         }
         catch
         {
-            return false;
+            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
         }
     }
 
-    static bool CopyDirectory(string source, string dest)
+    static void CopyDirectory(string source, string dest)
     {
         try
         {
@@ -167,12 +211,10 @@ public class WindowsClipboard : IClipboard
                 string path = Path.Combine(dest, dir.Name);
                 CopyDirectory(dir.FullName, path);
             }
-
-            return true;
         }
         catch
         {
-            return false;
+            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
         }
     }
 }

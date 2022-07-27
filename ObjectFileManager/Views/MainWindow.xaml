@@ -22,33 +22,52 @@
         </Style>
     </Window.Resources>
     <DockPanel>
-        <Menu DockPanel.Dock="Top" 
-              Background="White">
-            <MenuItem Header="Файл">
-                <MenuItem Header="Открыть"
+        <Grid DockPanel.Dock="Top" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Menu Grid.Column="0" 
+                Background="White"
+              Margin="0,5,0,0"
+              Height="20">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Открыть"
                           Command="{Binding OpenCommand}"
                           CommandParameter="{Binding SelectedItem.FullName}"/>
-                <MenuItem Header="Создать">
-                    <MenuItem Header="Файл"
+                    <MenuItem Header="Создать">
+                        <MenuItem Header="Файл"
                               Command="{Binding CreateFileCommand}"/>
-                    <MenuItem Header="Папку"
+                        <MenuItem Header="Папку"
                               Command="{Binding CreateCatalogCommand}"/>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
                 </MenuItem>
-                <Separator />
-                <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
-            </MenuItem>
-            <MenuItem Header="Правка">
-                <MenuItem Header="Вырезать"
+                <MenuItem Header="Правка">
+                    <MenuItem Header="Вырезать"
                           Command="{Binding CutCommand}"/>
-                <MenuItem Header="Копировать"
+                    <MenuItem Header="Копировать"
                           Command="{Binding CopyCommand}"/>
-                <MenuItem Header="Вставить"
+                    <MenuItem Header="Вставить"
                           Command="{Binding PasteCommand}"/>
-                <Separator />
-                <MenuItem Header="Удалить"
+                    <Separator />
+                    <MenuItem Header="Удалить"
                           Command="{Binding RemoveCommand}"/>
-            </MenuItem>
-        </Menu>
+                </MenuItem>
+            </Menu>
+            <TextBlock Text="Поиск: "
+                       Grid.Column="1"
+                       Margin="5,0,0,3"
+                       VerticalAlignment="Bottom"/>
+            <TextBox Text = "{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Column="2"
+                     Margin="5,5,5,0"
+                     VerticalAlignment="Top" 
+                     TextWrapping="NoWrap"
+                     Height="20" />
+        </Grid>
         <Grid>
             <Button Content="←"
                     Margin="5,5,0,0"
@@ -69,22 +88,17 @@
                     Width="20" Height="20"
                     Command="{Binding ToUpCommand}"/>
             <TextBox Text="{Binding PathLine}"
-                     Margin="80,5,235,0"
+                     Margin="80,5,30,0"
                      VerticalAlignment="Top"
                      TextWrapping="NoWrap"
                      Height="20"/>
             <Button Content="→"
-                    Margin="0,5,210,0"
+                    Margin="0,5,5,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Width="20" Height="20"
                     Command="{Binding ToPathCommand}"
                     CommandParameter="{Binding PathLine}"/>
-            <TextBox Text = "Поиск"
-                     Margin="0,5,5,0"
-                     HorizontalAlignment="Right"
-                     VerticalAlignment="Top" 
-                     Width="200" Height="20" />
             <TextBlock Text="Элементов: "
                    Margin="5,0,0,5" 
                    HorizontalAlignment="Left" 
@@ -176,15 +190,15 @@
                     </DataGrid.Resources>
                     <DataGrid.InputBindings>
                         <MouseBinding Gesture="LeftDoubleClick"
-                                      Command="{Binding DataContext.ToPathCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                      CommandParameter="{Binding SelectedItem.FullName, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                      Command="{Binding OpenCommand}"
+                                      CommandParameter="{Binding SelectedItem.FullName}"/>
                     </DataGrid.InputBindings>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Имя"
                                             Binding="{Binding NameWithoutExtension}"
                                             ElementStyle="{StaticResource PaddingCell}"/>
                         <DataGridTextColumn Header="Тип"
-                                            Binding="{Binding Type}"
+                                            Binding="{Binding DisplayType}"
                                             ElementStyle="{StaticResource PaddingCell}"/>
                         <DataGridTextColumn Header="Размер, KB"
                                             Binding="{Binding Size, StringFormat=N0}"
