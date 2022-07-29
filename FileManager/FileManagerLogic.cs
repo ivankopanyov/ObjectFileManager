@@ -1,19 +1,17 @@
 ﻿using FileManager.Content;
-using FileManager.Information;
-using FileManager.Memory;
-using FileManager.Navigation;
+using FileManager.Services;
 
 namespace FileManager;
 
-public class FMLogic
+public class FileManagerLogic
 {
-    private INavigator _Navigator;
+    private readonly INavigator _Navigator;
 
-    private IMessageService _MessageService;
+    private readonly IMessageService _MessageService;
+
+    private readonly CIDrive[] _Drives;
 
     private CatalogItem[] _ItemsList;
-
-    private Drive[] _Drives;
 
     public INavigator Navigator => _Navigator;
 
@@ -21,7 +19,7 @@ public class FMLogic
 
     public CatalogItem[] ItemsList => _ItemsList;
 
-    public Drive[] Drives => _Drives;
+    public CIDrive[] Drives => _Drives;
 
     public bool BackExists => _Navigator.BackExists;
 
@@ -29,14 +27,14 @@ public class FMLogic
 
     public bool UpExists => _Navigator.UpExists;
 
-    public FMLogic(INavigator navigator, IMessageService messageService)
+    public FileManagerLogic(INavigator navigator, IMessageService messageService)
     { 
         if (navigator is null)
             throw new ArgumentNullException(nameof(navigator));
 
         _Navigator = navigator;
         _MessageService = messageService; 
-        _Drives = Drive.GetDrives();
+        _Drives = CIDrive.GetDrives();
         UpdateItems();
     }
 
@@ -126,7 +124,7 @@ public class FMLogic
         }
     }
 
-    public void Cut(CatalogItem item, IClipboard clipboard)
+    public void Cut(CatalogItem item, IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));
@@ -144,7 +142,7 @@ public class FMLogic
         item.Cut(clipboard);
     }
 
-    public void Copy(CatalogItem item, IClipboard clipboard)
+    public void Copy(CatalogItem item, IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));
@@ -162,7 +160,7 @@ public class FMLogic
         item.Copy(clipboard);
     }
 
-    public void Paste(IClipboard clipboard, string path)
+    public void Paste(IClipboard<string, string> clipboard, string path)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));

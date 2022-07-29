@@ -1,14 +1,16 @@
 ﻿namespace FileManager.Editor;
 
-public class FileEditor
+public class FileEditor : IEditor<string>
 {
-    private string _FilePath;
+    private readonly string _FilePath;
 
     private string _FileContent;
 
     private bool _UpdateContent;
 
-    public string FileContent
+    public string SourceName { get; }
+
+    public string Content
     {
         get => _FileContent;
 
@@ -30,6 +32,7 @@ public class FileEditor
             throw new FileNotFoundException($"Файл {filePath} не найден!");
 
         _FilePath = filePath;
+        SourceName = Path.GetFileName(filePath);
 
         try
         {
@@ -59,7 +62,7 @@ public class FileEditor
         try
         {
             using var reader = new StreamReader(_FilePath);
-            FileContent = reader.ReadToEnd();
+            Content = reader.ReadToEnd();
         }
         catch
         {
@@ -72,7 +75,7 @@ public class FileEditor
         try
         {
             using var writer = new StreamWriter(_FilePath);
-            writer.Write(FileContent);
+            writer.Write(Content);
             _UpdateContent = false;
         }
         catch

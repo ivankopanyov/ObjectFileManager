@@ -2,7 +2,7 @@
 
 internal sealed class CICatalog : CatalogItem
 {
-    private DirectoryInfo _Directory;
+    private readonly DirectoryInfo _Directory;
 
     public override string Name
     {

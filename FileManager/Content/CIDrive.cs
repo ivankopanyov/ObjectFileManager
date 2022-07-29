@@ -1,8 +1,8 @@
 ﻿namespace FileManager.Content;
 
-public class Drive
+public class CIDrive
 {
-    private DriveInfo _Drive;
+    private readonly DriveInfo _Drive;
 
     public string Name => _Drive.Name;
 
@@ -12,21 +12,21 @@ public class Drive
 
     public long FreeSize => _Drive.IsReady ? _Drive.TotalFreeSpace : 0;
 
-    public Drive(DriveInfo drive) => _Drive = drive;
+    public CIDrive(DriveInfo drive) => _Drive = drive;
 
-    public static Drive[] GetDrives()
+    public static CIDrive[] GetDrives()
     {
         try
         {
             var drives = DriveInfo.GetDrives();
-            var result = new Drive[drives.Length];
+            var result = new CIDrive[drives.Length];
             for (int i = 0; i < result.Length; i++)
-                result[i] = new Drive(drives[i]);
+                result[i] = new CIDrive(drives[i]);
             return result;
         }
         catch
         {
-            return new Drive[0];
+            return new CIDrive[0];
         }
     }
 }

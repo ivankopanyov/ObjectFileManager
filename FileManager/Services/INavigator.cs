@@ -1,4 +1,4 @@
-﻿namespace FileManager.Navigation;
+﻿namespace FileManager.Services;
 
 public interface INavigator
 {

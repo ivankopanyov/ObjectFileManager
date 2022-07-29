@@ -1,40 +1,40 @@
-﻿using ObjectFileManager.ViewModels.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace ObjectFileManager.Services;
 
-public class DialogService
+public class DialogService : IDialogService<object>
 {
-    private readonly Dictionary<string, Window> _DialogViews = new Dictionary<string, Window>();
+    private readonly Dictionary<string, Action<object>> _DialogViews = new Dictionary<string, Action<object>>();
 
-    public void Register(string key, Window window)
+    public void Register(string key, Action<object> action)
     {
         if (key is null)
             throw new ArgumentNullException(nameof(key));
 
-        if (window is null)
-            throw new ArgumentNullException(nameof(window));
+        if (action is null)
+            throw new ArgumentNullException(nameof(action));
 
         if (_DialogViews.ContainsKey(key))
             throw new InvalidOperationException($"Ключ {key} уже зарегистрирован!");
 
-        if (window.DataContext is null || !window.DataContext.GetType().IsSubclassOf(typeof(DialogViewModel)))
-            throw new ArgumentException("Некорректный тип DataContext");
-
-        _DialogViews[key] = window;
+        _DialogViews[key] = action;
     }
 
-    public void ShowDialog(string key)
+    public void Unregister(string key)
     {
-        if (_DialogViews.ContainsKey(key))
-            _DialogViews[key].ShowDialog();
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        if (!_DialogViews.ContainsKey(key))
+            throw new InvalidOperationException($"Ключ {key} не зарегистрирован!");
+
+        _DialogViews.Remove(key);
     }
 
-    public void Update(string key, object data)
+    public void ShowDialog(string key, object path)
     {
         if (_DialogViews.ContainsKey(key))
-            ((DialogViewModel)_DialogViews[key].DataContext).UpdateData(data);
+            _DialogViews[key](path);
     }
 }

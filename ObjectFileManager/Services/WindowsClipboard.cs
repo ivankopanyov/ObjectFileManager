@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
-using FileManager.Memory;
+using FileManager.Services;
 
 namespace ObjectFileManager.Services;
 
-public class WindowsClipboard : IClipboard
+public class WindowsClipboard : IClipboard<string, string>
 {
-    private static WindowsClipboard _Clipboard = new WindowsClipboard();
+    private static readonly WindowsClipboard _Clipboard = new WindowsClipboard();
 
     public static WindowsClipboard Clipboard => _Clipboard;
 

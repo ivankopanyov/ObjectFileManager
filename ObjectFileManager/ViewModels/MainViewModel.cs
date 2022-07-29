@@ -5,26 +5,23 @@ using System.Windows;
 using System.Windows.Input;
 using FileManager;
 using FileManager.Content;
-using FileManager.Navigation;
+using FileManager.Editor;
+using FileManager.Services;
 using ObjectFileManager.Commands;
 using ObjectFileManager.Services;
 using ObjectFileManager.ViewModels.Base;
-using ObjectFileManager.Views;
 
 namespace ObjectFileManager.ViewModels;
 
 public class MainViewModel : ViewModel
 {
-
-    private MessageService _MessageService = new MessageService();
-
-    private FMLogic _FileManager;
+    private readonly FileManagerLogic _FileManager;
 
     private string _PathLine;
 
     private string _Title;
 
-    private ObservableCollection<Drive> _Drives;
+    private ObservableCollection<CIDrive> _Drives;
 
     private ObservableCollection<CatalogItem> _Items;
 
@@ -43,7 +40,7 @@ public class MainViewModel : ViewModel
         set { _Title = value; OnPropertyChanged(); }
     }
 
-    public ObservableCollection<Drive> Drives
+    public ObservableCollection<CIDrive> Drives
     {
         get => _Drives;
         set { _Drives = value; OnPropertyChanged(); }
@@ -186,9 +183,9 @@ public class MainViewModel : ViewModel
 
     public ICommand ExitCommand => new RelayCommand((obj) => App.Current.Shutdown());
 
-    public MainViewModel(DialogService dialogService) : base(dialogService)
+    public MainViewModel(IDialogService<object> dialogService, IMessageService messageService) : base(dialogService, messageService)
     {
-        _FileManager = new FMLogic(OSNavigator.Navigator, _MessageService);
+        _FileManager = new FileManagerLogic(OSNavigator.Navigator, messageService);
         Drives = new(_FileManager.Drives);
         Update(_FileManager.CurrentDirectory);
     }
@@ -209,8 +206,7 @@ public class MainViewModel : ViewModel
         {
             try
             {
-                _DialogService.Update("editor", obj);
-                _DialogService.ShowDialog("editor");
+                _DialogService.ShowDialog("editor", new FileEditor((string)obj));
             }
             catch (Exception ex)
             {

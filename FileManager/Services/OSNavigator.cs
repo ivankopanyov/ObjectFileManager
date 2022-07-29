@@ -1,16 +1,16 @@
-﻿namespace FileManager.Navigation;
+﻿namespace FileManager.Services;
 
 public class OSNavigator : INavigator
 {
-    private static OSNavigator _Navigator = new OSNavigator();
+    private readonly static OSNavigator _Navigator = new OSNavigator();
 
     public static OSNavigator Navigator => _Navigator;
 
+    private readonly Stack<string> _Back = new();
+
+    private readonly Stack<string> _Forward = new();
+
     private DirectoryInfo _CurrentInfo;
-
-    private Stack<string> _Back = new();
-
-    private Stack<string> _Forward = new();
 
     public string CurrentDirectory
     {

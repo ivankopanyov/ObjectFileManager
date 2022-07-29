@@ -1,10 +1,10 @@
-﻿using FileManager.Memory;
+﻿using FileManager.Services;
 
 namespace FileManager.Content;
 
 public abstract class CatalogItem
 {
-    protected char[] _Chars = new char[] { '\\', '/', '*', ':', '?', '<', '>', '|' };
+    protected readonly char[] _Chars = new char[] { '\\', '/', '*', ':', '?', '<', '>', '|' };
 
     public abstract string Name { get; set; }
 
@@ -82,7 +82,7 @@ public abstract class CatalogItem
         }
     }
 
-    public void Cut(IClipboard clipboard)
+    public void Cut(IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));
@@ -93,7 +93,7 @@ public abstract class CatalogItem
         clipboard.Cut(FullName);
     }
 
-    public void Copy(IClipboard clipboard)
+    public void Copy(IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));

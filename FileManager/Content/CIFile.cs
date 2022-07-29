@@ -2,7 +2,7 @@
 
 internal sealed class CIFile : CatalogItem
 {
-    private FileInfo _File;
+    private readonly FileInfo _File;
 
     public override string Name
     {

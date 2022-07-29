@@ -1,4 +1,4 @@
-﻿namespace FileManager.Information;
+﻿namespace FileManager.Services;
 
 public enum MessageResult
 {

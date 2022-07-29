@@ -1,13 +1,16 @@
-﻿using ObjectFileManager.Services;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using FileManager.Services;
+using ObjectFileManager.Services;
 
 namespace ObjectFileManager.ViewModels.Base;
 
 public abstract class ViewModel : INotifyPropertyChanged
 {
-    protected DialogService _DialogService;
+    protected readonly IDialogService<object> _DialogService;
+
+    protected readonly IMessageService _MessageService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -16,11 +19,15 @@ public abstract class ViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
     }
 
-    public ViewModel(DialogService dialogService)
+    public ViewModel(IDialogService<object> dialogService, IMessageService messageService)
     {
         if (dialogService is null)
             throw new ArgumentNullException(nameof(dialogService));
 
+        if (messageService is null)
+            throw new ArgumentNullException(nameof(messageService));
+
         _DialogService = dialogService;
+        _MessageService = messageService;
     }
 }

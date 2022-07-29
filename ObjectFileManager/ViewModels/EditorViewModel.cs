@@ -1,55 +1,25 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Input;
 using FileManager.Editor;
-using FileManager.Information;
+using FileManager.Services;
 using ObjectFileManager.Commands;
 using ObjectFileManager.Services;
 using ObjectFileManager.ViewModels.Base;
 
 namespace ObjectFileManager.ViewModels;
 
-public class EditorViewModel : DialogViewModel
+public class EditorViewModel : ViewModel
 {
-    private FileEditor _FileEditor;
+    protected readonly Action _Close;
 
-    private IMessageService _MessageService = new MessageService();
-
-    private string _FilePath;
-
-    public string FilePath
-    { 
-        get => _FilePath;
-        set 
-        {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(nameof(FilePath));
-
-            if (!File.Exists(value))
-                throw new FileNotFoundException($"Файл {value} не найден!");
-
-            Title = Path.GetFileName(value);
-
-            try
-            {
-                _FileEditor = new FileEditor(value);
-                OnPropertyChanged("FileContent");
-                OnPropertyChanged("SymbolsCount");
-                OnPropertyChanged("LinesCount");
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw ex;
-            }
-        }
-    }
+    private IEditor<string> _FileEditor;
 
     public string FileContent
     {
-        get => _FileEditor is null ? string.Empty : _FileEditor.FileContent;
+        get => _FileEditor is null ? string.Empty : _FileEditor.Content;
         set
         {
-            _FileEditor.FileContent = value;
+            _FileEditor.Content = value;
             OnPropertyChanged("SymbolsCount");
             OnPropertyChanged("LinesCount");
             OnPropertyChanged();
@@ -70,31 +40,20 @@ public class EditorViewModel : DialogViewModel
         }
     }
 
-    public string Title { get; private set; }
+    public string Title => _FileEditor.SourceName;
 
-    public EditorViewModel(Action close, DialogService dialogService) : base(null!, close, dialogService) { }
-
-    public override void UpdateData(object data)
+    public EditorViewModel(IEditor<string> editor, Action close, IDialogService<object> dialogService, IMessageService messageService) : 
+        base(dialogService, messageService) 
     {
-        if (data is null)
-            throw new ArgumentNullException(nameof(data));
+        if (close is null)
+            throw new ArgumentNullException(nameof(close));
 
-        if (data.GetType() != typeof(string))
-            throw new ArgumentException("Некорректный тип данных.");
-
-        var path = (string)data;
-
-        if (string.IsNullOrEmpty(path))
-            throw new ArgumentNullException(nameof(FilePath));
-
-        if (!File.Exists(path))
-            throw new FileNotFoundException($"Файл {path} не найден!");
-
-        Title = Path.GetFileName(path);
+        if (editor is null)
+            throw new ArgumentNullException(nameof(editor));
 
         try
         {
-            _FileEditor = new FileEditor(path);
+            _FileEditor = editor;
             OnPropertyChanged("FileContent");
             OnPropertyChanged("SymbolsCount");
             OnPropertyChanged("LinesCount");
@@ -103,6 +62,8 @@ public class EditorViewModel : DialogViewModel
         {
             throw ex;
         }
+
+        _Close = close;
     }
 
     public ICommand SaveCommand => new RelayCommand((obj) => 
