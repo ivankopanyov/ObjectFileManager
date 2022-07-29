@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows;
 using FileManager.Memory;
 
-namespace ObjectFileManager.Utilities;
+namespace ObjectFileManager.Services;
 
 public class WindowsClipboard : IClipboard
 {

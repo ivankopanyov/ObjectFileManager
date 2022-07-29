@@ -4,13 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:ObjectFileManager.ViewModels"
+        d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
         mc:Ignorable="d"
         Title="{Binding Title}"
         Height="450" Width="800"
         MinHeight="200" MinWidth="350">
-    <Window.DataContext>
-        <viewModels:MainViewModel/>
-    </Window.DataContext>
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}" x:Key="RightCell">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -68,48 +66,54 @@
                      TextWrapping="NoWrap"
                      Height="20" />
         </Grid>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="Элементов: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Items.Count}"/>
+            </StatusBarItem>
+        </StatusBar>
         <Grid>
-            <Button Content="←"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Height="25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="←"
+                        Grid.Column="0"
                     Margin="5,5,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Width="20" Height="20"
+                    Width="20"
                     Command="{Binding ToBackCommand}"/>
-            <Button Content="→"
-                    Margin="30,5,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Width="20" Height="20"
+                <Button Content="→"
+                        Grid.Column="1"
+                    Margin="5,5,0,0"
+                    Width="20"
                     Command="{Binding ToForwardCommand}"/>
-            <Button Content="↑"
-                    Margin="55,5,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Width="20" Height="20"
+                <Button Content="↑"
+                        Grid.Column="2"
+                    Margin="5,5,0,0"
+                    Width="20"
                     Command="{Binding ToUpCommand}"/>
-            <TextBox Text="{Binding PathLine}"
-                     Margin="80,5,30,0"
-                     VerticalAlignment="Top"
-                     TextWrapping="NoWrap"
-                     Height="20"/>
-            <Button Content="→"
-                    Margin="0,5,5,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Width="20" Height="20"
+                <TextBox Text="{Binding PathLine}"
+                         Grid.Column="3"
+                     Margin="5,5,0,0"
+                     TextWrapping="NoWrap"/>
+                <Button Content="→"
+                        Grid.Column="4"
+                    Margin="5,5,5,0"
+                    Width="20"
                     Command="{Binding ToPathCommand}"
                     CommandParameter="{Binding PathLine}"/>
-            <TextBlock Text="Элементов: "
-                   Margin="5,0,0,5" 
-                   HorizontalAlignment="Left" 
-                   VerticalAlignment="Bottom" 
-                   TextWrapping="NoWrap" 
-                   Width="66" Height="20"/>
-            <TextBlock Text="{Binding Items.Count}" Margin="76,0,5,5"
-                       VerticalAlignment="Bottom" 
-                       TextWrapping="NoWrap" 
-                       Height="20"/>
-            <Grid Margin="5,30,5,30">
+            </Grid>
+            <Grid Grid.Row="1" Margin="5,5,5,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="100"/>
                     <ColumnDefinition Width="auto"/>

@@ -7,13 +7,15 @@ using FileManager;
 using FileManager.Content;
 using FileManager.Navigation;
 using ObjectFileManager.Commands;
-using ObjectFileManager.Utilities;
+using ObjectFileManager.Services;
 using ObjectFileManager.ViewModels.Base;
+using ObjectFileManager.Views;
 
 namespace ObjectFileManager.ViewModels;
 
 public class MainViewModel : ViewModel
 {
+
     private MessageService _MessageService = new MessageService();
 
     private FMLogic _FileManager;
@@ -142,22 +144,10 @@ public class MainViewModel : ViewModel
     },
     (obj) => _FileManager.UpExists);
 
-    public ICommand ToPathCommand => new RelayCommand((obj) =>
-    {
-        if (obj is null || obj.GetType() != typeof(string) || CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
-            return;
+    public ICommand ToPathCommand => new RelayCommand((obj) => Open(obj));
 
-        Update(_FileManager.ChangeDirectory((string)obj));
-    });
-
-    public ICommand OpenCommand => new RelayCommand((obj) =>
-    {
-        if (obj is null || obj.GetType() != typeof(string) || CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
-            return;
-
-        Update(_FileManager.ChangeDirectory((string)obj));
-    },
-    (obj) => SelectedItem is not null);
+    public ICommand OpenCommand => new RelayCommand((obj) => Open(obj),
+        (obj) => SelectedItem is not null);
 
     public ICommand CutCommand => new RelayCommand((obj) =>
         _FileManager.Cut(SelectedItem, WindowsClipboard.Clipboard),
@@ -196,7 +186,7 @@ public class MainViewModel : ViewModel
 
     public ICommand ExitCommand => new RelayCommand((obj) => App.Current.Shutdown());
 
-    public MainViewModel()
+    public MainViewModel(DialogService dialogService) : base(dialogService)
     {
         _FileManager = new FMLogic(OSNavigator.Navigator, _MessageService);
         Drives = new(_FileManager.Drives);
@@ -208,5 +198,28 @@ public class MainViewModel : ViewModel
         PathLine = path;
         Title = new DirectoryInfo(path).Name;
         Items = new(_FileManager.ItemsList);
+    }
+
+    private void Open(object obj)
+    {
+        if (obj is null || obj.GetType() != typeof(string))
+            return;
+
+        if (CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
+        {
+            try
+            {
+                _DialogService.Update("editor", obj);
+                _DialogService.ShowDialog("editor");
+            }
+            catch (Exception ex)
+            {
+                _MessageService.ShowError(ex.Message);
+            }
+
+            return;
+        }
+
+        Update(_FileManager.ChangeDirectory((string)obj));
     }
 }

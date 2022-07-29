@@ -9,8 +9,8 @@ namespace ObjectFileManager.Commands;
 
 public class RelayCommand : ICommand
 {
-    private readonly Action<object> _execute;
-    private readonly Predicate<object> _canExecute;
+    private readonly Action<object> _Execute;
+    private readonly Predicate<object> _CanExecute;
 
     public event EventHandler CanExecuteChanged
     {
@@ -19,11 +19,11 @@ public class RelayCommand : ICommand
     }
 
     public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
-        => (_execute, _canExecute) = (execute, canExecute);
+        => (_Execute, _CanExecute) = (execute, canExecute);
 
     public bool CanExecute(object parameter)
-        => _canExecute == null || _canExecute(parameter);
+        => _CanExecute == null || _CanExecute(parameter);
 
-    public void Execute(object parameter)
-        => _execute(parameter);
+    public virtual void Execute(object parameter)
+        => _Execute(parameter);
 }

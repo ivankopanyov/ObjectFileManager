@@ -6,5 +6,5 @@ public interface IMessageService
 
     bool ShowYesNo(string message);
 
-    bool ShowOkCancel(string message);
+    MessageResult ShowYesNoCancel(string message);
 }
