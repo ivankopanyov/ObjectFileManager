@@ -7,16 +7,23 @@ using FileManager.Services;
 
 namespace ObjectFileManager.Services;
 
+/// <summary>Класс для работы с буфером обмена операционной системы.</summary>
 public class WindowsClipboard : IClipboard<string, string>
 {
+    /// <summary>Объект класса буфера обмена операционной системы.</summary>
     private static readonly WindowsClipboard _Clipboard = new WindowsClipboard();
 
+    /// <summary>Объект класса буфера обмена операционной системы.</summary>
     public static WindowsClipboard Clipboard => _Clipboard;
 
+    /// <summary>Инициализация объекта буфера обмена операционной системы.</summary>
     private WindowsClipboard() { }
 
-    public bool ContainsFiles => System.Windows.Clipboard.ContainsFileDropList();
+    /// <summary>Проверка на содержание данных в буфере обмена.</summary>
+    public bool ContainsData => System.Windows.Clipboard.ContainsFileDropList();
 
+    /// <summary>Вырезание в буфер обмена.</summary>
+    /// <param name="path">Путь вырезаемого элемента.</param>
     public void Cut(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -28,6 +35,8 @@ public class WindowsClipboard : IClipboard<string, string>
         CutProcess(new() { path });
     }
 
+    /// <summary>Вырезание нескольких элементов в буфер обмена.</summary>
+    /// <param name="paths">Перечисление путей вырезаемых объектов.</param>
     public void Cut(IEnumerable<string> paths)
     {
         if (paths is null)
@@ -51,6 +60,8 @@ public class WindowsClipboard : IClipboard<string, string>
         CutProcess(collection);
     }
 
+    /// <summary>Копирование в буфер обмена.</summary>
+    /// <param name="path">Путь копируемого элемента.</param>
     public void Copy(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -63,6 +74,8 @@ public class WindowsClipboard : IClipboard<string, string>
         System.Windows.Clipboard.SetFileDropList(new() { path });
     }
 
+    /// <summary>Копирование нескольких элементов в буфер обмена.</summary>
+    /// <param name="paths">Перечисление путей копируемых объектов.</param>
     public void Copy(IEnumerable<string> paths)
     {
         if (paths is null)
@@ -87,9 +100,11 @@ public class WindowsClipboard : IClipboard<string, string>
         System.Windows.Clipboard.SetFileDropList(collection);
     }
 
+    /// <summary>Вставка элементов из буфера обмена.</summary>
+    /// <param name="path">Путь к каталогу для вставки.</param>
     public void Paste(string path)
     {
-        if (!ContainsFiles)
+        if (!ContainsData)
             throw new ArgumentNullException(nameof(path));
 
         if (!Directory.Exists(path))
@@ -137,8 +152,11 @@ public class WindowsClipboard : IClipboard<string, string>
         if (move) Clear();
     }
 
+    /// <summary>Очистка буфера обмена.</summary>
     public void Clear() => System.Windows.Clipboard.Clear();
 
+    /// <summary>Процесс вырезания элементов.</summary>
+    /// <param name="items">Коллекция путей к вырезаемым элементам.</param>
     private void CutProcess(StringCollection items)
     {
         var moveEffect = new byte[] { 2, 0, 0, 0 };
@@ -153,6 +171,11 @@ public class WindowsClipboard : IClipboard<string, string>
         System.Windows.Clipboard.SetDataObject(data, true);
     }
 
+    /// <summary>Вставка файла.</summary>
+    /// <param name="source">Вставляемый файл.</param>
+    /// <param name="dest">Новый файл.</param>
+    /// <param name="isMove">Перемещение файла.</param>
+    /// <exception cref="InvalidOperationException">Не удалось вставить файл.</exception>
     private void PasteFile(string source, string dest, bool isMove)
     {
         var file = new FileInfo(dest);
@@ -175,6 +198,11 @@ public class WindowsClipboard : IClipboard<string, string>
         }
     }
 
+    /// <summary>Вставка каталога.</summary>
+    /// <param name="source">Вставляемый каталог.</param>
+    /// <param name="dest">Новый каталог.</param>
+    /// <param name="isMove">Перемещение каталога.</param>
+    /// <exception cref="InvalidOperationException">Не удалось вставить каталог.</exception>
     private void PasteDirectory(string source, string dest, bool isMove)
     {
         if (source == dest) return;
@@ -190,6 +218,10 @@ public class WindowsClipboard : IClipboard<string, string>
         }
     }
 
+    /// <summary>Копирование директории.</summary>
+    /// <param name="source">Директория для копирования.</param>
+    /// <param name="dest">новая диретория.</param>
+    /// <exception cref="InvalidOperationException">Не удалось скопировать директорию.</exception>
     static void CopyDirectory(string source, string dest)
     {
         try

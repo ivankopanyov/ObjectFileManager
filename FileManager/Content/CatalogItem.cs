@@ -2,32 +2,47 @@
 
 namespace FileManager.Content;
 
+/// <summary>Класс, описывающий элемент каталога.</summary>
 public abstract class CatalogItem
 {
-    protected readonly char[] _Chars = new char[] { '\\', '/', '*', ':', '?', '<', '>', '|' };
+    /// <summary>Недопустимые символы в имени элемента каталога.</summary>
+    protected readonly char[] _BadSymbols = new char[] { '\\', '/', '*', ':', '?', '<', '>', '|' };
 
+    /// <summary>Имя элемента каталога.</summary>
     public abstract string Name { get; set; }
 
+    /// <summary>Имя элемента каталога без разрешения.</summary>
     public abstract string NameWithoutExtension { get; }
 
+    /// <summary>Разрешение элемента каталога.</summary>
     public abstract string Exstension { get; }
 
+    /// <summary>Полное имя, включающее путь к элементу каталога.</summary>
     public abstract string FullName { get; }
 
+    /// <summary>Тип элемента каталога.</summary>
     public abstract CatalogItemType Type { get; }
 
+    /// <summary>Тип элемента каталога для отображения в интерфейсе пользователя.</summary>
     public abstract string DisplayType { get; }
 
+    /// <summary>Размер элемента каталога.</summary>
     public abstract long? Size { get; }
 
+    /// <summary>Вычисляемый размер элемента каталога, 
+    /// включающий размер всех содержащихся в нем фалов и подкаталогов.</summary>
     public abstract long? ComputedSize { get; }
 
+    /// <summary>Дата и время создания элемента каталога.</summary>
     public abstract DateTime CreateDate { get; }
 
+    /// <summary>Дата и вемя последнего изменения элемента каталога.</summary>
     public abstract DateTime UpdateDate { get; }
 
+    /// <summary>Проверка на существование элемента каталога.</summary>
     public abstract bool Exists { get; }
 
+    /// <summary>Нахождение элемента каталога в режиме только для чтения.</summary>
     public bool ReadOnly
     {
         get
@@ -55,6 +70,7 @@ public abstract class CatalogItem
         }
     }
 
+    /// <summary>Нахождение элемента каталога в скрытом режиме.</summary>
     public bool Hidden
     {
         get
@@ -82,6 +98,10 @@ public abstract class CatalogItem
         }
     }
 
+    /// <summary>Вырезание элемента каталога в буфер обмена.</summary>
+    /// <param name="clipboard">Буфер обмена.</param>
+    /// <exception cref="ArgumentNullException">Буфер обмена не инициализирован.</exception>
+    /// <exception cref="FileNotFoundException">Элемент каталога не найден.</exception>
     public void Cut(IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
@@ -93,6 +113,10 @@ public abstract class CatalogItem
         clipboard.Cut(FullName);
     }
 
+    /// <summary>Копирование элемента каталога в буфер обмена.</summary>
+    /// <param name="clipboard">Буфер обмена.</param>
+    /// <exception cref="ArgumentNullException">Буфер обмена не инициализирован.</exception>
+    /// <exception cref="FileNotFoundException">Элемент каталога не найден.</exception>
     public void Copy(IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
@@ -104,11 +128,18 @@ public abstract class CatalogItem
         clipboard.Copy(FullName);
     }
 
+    /// <summary>Удаление элемента каталога.</summary>
     public abstract void Remove();
 
+    /// <summary>Получение значения атрибута элемента каталога.</summary>
+    /// <param name="attribute">Атрибут.</param>
+    /// <returns>Значение атрибута.</returns>
     protected bool HasAttribute(FileAttributes attribute) =>
         (File.GetAttributes(FullName) & attribute) == attribute;
 
+    /// <summary>Изменение значния атрибута элемента каталога.</summary>
+    /// <param name="attribute">Атрибут.</param>
+    /// <param name="value">Новое значение атрибута.</param>
     protected void ChangeAttribute(FileAttributes attribute, bool value)
     {
         FileAttributes attributes = File.GetAttributes(FullName);
@@ -118,6 +149,9 @@ public abstract class CatalogItem
             File.SetAttributes(FullName, File.GetAttributes(FullName) | attribute);
     }
 
+    /// <summary>Определение типа элемента каталога.</summary>
+    /// <param name="path">Путь к элементу каталога.</param>
+    /// <returns>Тип элемента каталога.</returns>
     public static CatalogItemType GetItemType(string path)
     {
         if (Directory.Exists(path)) return CatalogItemType.Catalog;
@@ -127,6 +161,12 @@ public abstract class CatalogItem
         return CatalogItemType.None;
     }
 
+    /// <summary>Получение элементов каталога из каталога по укаанному пути.</summary>
+    /// <param name="path">Путь к каталогу.</param>
+    /// <returns>Элементы, содержащиеся в каталоге.</returns>
+    /// <exception cref="ArgumentNullException">Путь не инициализирован или пустой.</exception>
+    /// <exception cref="DirectoryNotFoundException">Каталог по указанному пути не найден.</exception>
+    /// <exception cref="UnauthorizedAccessException">Нет доступа к содержимому каталога.</exception>
     public static CatalogItem[] GetCatalogItems(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -157,6 +197,14 @@ public abstract class CatalogItem
         }
     }
 
+    /// <summary>Поиск элементов каталога по заданному фильтру.</summary>
+    /// <param name="path">Путь к каталогу для поиска.</param>
+    /// <param name="filter">Фильтр для поиска элементов.</param>
+    /// <param name="allCatalogs">Поиск по всем подкаталогам.</param>
+    /// <returns>Найденные элементы.</returns>
+    /// <exception cref="ArgumentNullException">Путь к каталогу или фильтр не инициализированы или пустые.</exception>
+    /// <exception cref="DirectoryNotFoundException">Каталог не найден.</exception>
+    /// <exception cref="InvalidOperationException">Не удалось произвести поиск по каталогу.</exception>
     public static CatalogItem[] FindCatalogItems(string path, string filter, bool allCatalogs)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -194,6 +242,11 @@ public abstract class CatalogItem
         }
     }
 
+    /// <summary>Создание нового файла.</summary>
+    /// <param name="path">Путь к каталогу, в котором будет создан файл.</param>
+    /// <exception cref="ArgumentNullException">Путь к каталогу не инциализирован или пустой.</exception>
+    /// <exception cref="DirectoryNotFoundException">Каталог не найден.</exception>
+    /// <exception cref="InvalidOperationException">Не удалось создать файл.</exception>
     public static void CreateFile(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -219,6 +272,11 @@ public abstract class CatalogItem
         }
     }
 
+    /// <summary>Создание нового каталога.</summary>
+    /// <param name="path">Путь к каталогу, в котором будет создан новый каталог.</param>
+    /// <exception cref="ArgumentNullException">Путь к каталогу не инциализирован или пустой.</exception>
+    /// <exception cref="DirectoryNotFoundException">Каталог не найден.</exception>
+    /// <exception cref="InvalidOperationException">Не удалось создать новый каталог.</exception>
     public static void CreateCatalog(string path)
     {
         if (string.IsNullOrWhiteSpace(path))

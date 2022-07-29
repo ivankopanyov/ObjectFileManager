@@ -3,10 +3,17 @@ using System.Collections.Generic;
 
 namespace ObjectFileManager.Services;
 
-public class DialogService : IDialogService<object>
+/// <summary>Класс, описывабющий сервис работы с окнами.</summary>
+public class WindowService : IWindowService<object>
 {
+    /// <summary>Словарь, содержащий делегаты создания и отображения окон.</summary>
     private readonly Dictionary<string, Action<object>> _DialogViews = new Dictionary<string, Action<object>>();
 
+    /// <summary>Регистрация делегата нового окна.</summary>
+    /// <param name="key">Ключ.</param>
+    /// <param name="action">Делегат.</param>
+    /// <exception cref="ArgumentNullException">Параметр не инициализирован.</exception>
+    /// <exception cref="InvalidOperationException">Переданный ключ уже содержится в реестре.</exception>
     public void Register(string key, Action<object> action)
     {
         if (key is null)
@@ -21,6 +28,10 @@ public class DialogService : IDialogService<object>
         _DialogViews[key] = action;
     }
 
+    /// <summary>Удаление объекта из реестра.</summary>
+    /// <param name="key">Ключ удаляемого объекта.</param>
+    /// <exception cref="ArgumentNullException">Параметр не инициализирован.</exception>
+    /// <exception cref="InvalidOperationException">Переданный ключ не содержится в реестре.</exception>
     public void Unregister(string key)
     {
         if (key is null)
@@ -32,9 +43,12 @@ public class DialogService : IDialogService<object>
         _DialogViews.Remove(key);
     }
 
-    public void ShowDialog(string key, object path)
+    /// <summary>Отображение окна.</summary>
+    /// <param name="key">Ключ.</param>
+    /// <param name="obj">Переданный параметр.</param>
+    public void ShowWindow(string key, object obj)
     {
         if (_DialogViews.ContainsKey(key))
-            _DialogViews[key](path);
+            _DialogViews[key](obj);
     }
 }

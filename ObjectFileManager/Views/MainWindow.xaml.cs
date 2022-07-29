@@ -2,9 +2,10 @@
 
 namespace ObjectFileManager.Views;
 
-/// <summary>Interaction logic for MainWindow.xaml</summary>
+/// <summary>Главное окно приложения.</summary>
 public partial class MainWindow : Window
 {
+    /// <summary>Инициализация главного окна приложения.</summary>
     public MainWindow()
     {
         InitializeComponent();

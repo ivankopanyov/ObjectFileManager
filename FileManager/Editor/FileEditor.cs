@@ -1,15 +1,21 @@
 ﻿namespace FileManager.Editor;
 
+/// <summary>Класс, описывающий редактор файлов.</summary>
 public class FileEditor : IEditor<string>
 {
+    /// <summary>Путь к редактируемому файлу.</summary>
     private readonly string _FilePath;
 
+    /// <summary>Содержимое редактируемого файла.</summary>
     private string _FileContent;
 
+    /// <summary>Флаг изменения содержимого редактируемого файла.</summary>
     private bool _UpdateContent;
 
+    /// <summary>Имя редактируемого файла.</summary>
     public string SourceName { get; }
 
+    /// <summary>Содержимое редактируемого файла.</summary>
     public string Content
     {
         get => _FileContent;
@@ -21,8 +27,13 @@ public class FileEditor : IEditor<string>
         }
     }
 
+    /// <summary>Флаг изменения содержимого редактируемого файла.</summary>
     public bool UpdateContent => _UpdateContent;
 
+    /// <summary>Инициализация объекта редактора файлов.</summary>
+    /// <param name="filePath">Путь к редактируемому файлу.</param>
+    /// <exception cref="ArgumentNullException">Путь к файлу не инициализирован или пустой.</exception>
+    /// <exception cref="FileNotFoundException">Редактируемый файл не найден.</exception>
     public FileEditor(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
@@ -45,6 +56,8 @@ public class FileEditor : IEditor<string>
         }
     }
 
+    /// <summary>Сохранение изменений содержимого файла.</summary>
+    /// <exception cref="InvalidOperationException">Не удалось сохранить изменения.</exception>
     public void Save()
     {
         try
@@ -57,6 +70,8 @@ public class FileEditor : IEditor<string>
         }
     }
 
+    /// <summary>Чтение данных из редактируемого файла.</summary>
+    /// <exception cref="InvalidOperationException">Не удалось получить данные файла.</exception>
     private void ReadFileContent()
     {
         try
@@ -70,6 +85,8 @@ public class FileEditor : IEditor<string>
         }
     }
 
+    /// <summary>Запись данных в редактируемый файл.</summary>
+    /// <exception cref="InvalidOperationException">Не удалось записать данные в файл.</exception>
     private void WriteFileContent()
     {
         try

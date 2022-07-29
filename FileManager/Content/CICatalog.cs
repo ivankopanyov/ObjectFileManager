@@ -1,9 +1,12 @@
 ﻿namespace FileManager.Content;
 
+/// <summary>Класс, описывающий каталог.</summary>
 internal sealed class CICatalog : CatalogItem
 {
+    /// <summary>Директория, описываемая текущим классом.</summary>
     private readonly DirectoryInfo _Directory;
 
+    /// <summary>Имя каталога.</summary>
     public override string Name
     {
         get => _Directory.Name;
@@ -12,9 +15,9 @@ internal sealed class CICatalog : CatalogItem
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentNullException(nameof(value));
 
-            foreach (char c in _Chars)
+            foreach (char c in _BadSymbols)
                 if (value.Contains(c))
-                    throw new ArgumentException($"Имя файла не должно содержать символы {string.Join(' ', _Chars)}");
+                    throw new ArgumentException($"Имя файла не должно содержать символы {string.Join(' ', _BadSymbols)}");
 
             var newName = Path.Combine(_Directory.Parent!.FullName, value);
 
@@ -41,18 +44,26 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
+    /// <summary>Имя каталога без разрешения. Совпадает с именем каталога.</summary>
     public override string NameWithoutExtension => Name;
 
+    /// <summary>Разрешение каталога. Всегда возвращает null.</summary>
     public override string Exstension => null!;
 
+    /// <summary>Полное имя каталога, включающее путь к каталогу.</summary>
     public override string FullName => Path.GetFullPath(_Directory.FullName);
 
+    /// <summary>Тип. Всегда возвращает Catalog.</summary>
     public override CatalogItemType Type => CatalogItemType.Catalog;
 
+    /// <summary>Тип, отображаемый в интерфейсе пользователя.</summary>
     public override string DisplayType => "Папка с файлами";
 
+    /// <summary>Размер каталога. Всегда возвращает null.</summary>
     public override long? Size => null;
 
+    /// <summary>Вычисляемый размер каталога в килобайтах, 
+    /// включающий размер всех содержащихся в нем фалов и подкаталогов.</summary>
     public override long? ComputedSize
     {
         get
@@ -68,6 +79,7 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
+    /// <summary>Дата и время создания каталога.</summary>
     public override DateTime CreateDate
     {
         get
@@ -83,6 +95,7 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
+    /// <summary>Дата и вемя последнего изменения каталога.</summary>
     public override DateTime UpdateDate
     {
         get
@@ -98,10 +111,15 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
+    /// <summary>Проверка на существование каталога.</summary>
     public override bool Exists => Directory.Exists(FullName);
 
+    /// <summary>Инициализация объекта каталога.</summary>
+    /// <param name="directory">Директория, описываемая текущим классом.</param>
     public CICatalog(DirectoryInfo directory) => _Directory = directory;
 
+    /// <summary>Удаление каталога.</summary>
+    /// <exception cref="UnauthorizedAccessException">Нет доступа для удаления каталога.</exception>
     public override void Remove()
     {
         if (!_Directory.Exists) return;
@@ -115,7 +133,5 @@ internal sealed class CICatalog : CatalogItem
             throw new UnauthorizedAccessException("Нет доступа для удаления директории!");
         }
     }
-
-
 }
 

@@ -1,20 +1,31 @@
 ﻿namespace FileManager.Services;
 
-public interface INavigator
+/// <summary>Навигатор.</summary>
+public interface INavigator<T>
 {
-    string CurrentDirectory { get; }
+    /// <summary>Текущее положение.</summary>
+    T Current { get; }
 
+    /// <summary>Проверка наличия обратного значения.</summary>
     bool BackExists { get; }
 
+    /// <summary>Проверка наличия следующего значения.</summary>
     bool ForwardExists { get; }
 
+    /// <summary>Проверка наличия вышестоящего значения.</summary>
     bool UpExists { get; }
 
-    void ToPath(string path, bool onlyRootPath = false);
+    /// <summary>Переход к указанному значению.</summary>
+    /// <param name="value">Значение.</param>
+    /// <param name="flag">Флаг.</param>
+    void GoTo(T value, bool flag);
 
-    void ToUp();
+    /// <summary>Переход к вышестоящему значению.</summary>
+    void GoToUp();
 
-    void ToBack();
+    /// <summary>Переход к обратному значению.</summary>
+    void GoToBack();
 
-    void ToForward();
+    /// <summary>Переход к следущему значению.</summary>
+    void GoToForward();
 }

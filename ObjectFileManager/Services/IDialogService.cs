@@ -3,7 +3,12 @@ using FileManager.Services;
 
 namespace ObjectFileManager.Services;
 
-public interface IDialogService<T> : IRegistry<string, Action<T>>
+/// <summary>Сервис работы с окнами.</summary>
+/// <typeparam name="T">Тип передаваемого параметра.</typeparam>
+public interface IWindowService<T> : IRegistry<string, Action<T>>
 {
-    public void ShowDialog(string key, T value);
+    /// <summary>Отображение окна.</summary>
+    /// <param name="key">Ключ.</param>
+    /// <param name="value">Переданный параметр.</param>
+    public void ShowWindow(string key, T value);
 }

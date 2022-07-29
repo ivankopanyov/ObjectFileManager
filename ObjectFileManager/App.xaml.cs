@@ -12,8 +12,8 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
-        var messageService = new MessageService();
-        var dialogService = new DialogService();
+        var messageService = new MessageBoxService();
+        var dialogService = new WindowService();
 
         var action = (object obj) =>
         {
