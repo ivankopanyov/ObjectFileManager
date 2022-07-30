@@ -6,43 +6,51 @@ using FileManager.Services;
 
 namespace ConsoleFileManager;
 
+/// <summary>Класс, описывающий логику работы консольного файлового менеджера.</summary>
 public class ConsoleFileManagerLogic
 {
-    private FileManagerLogic _FileManager;
+    /// <summary>Логика работы консольного файлового менеджера.</summary>
+    private IConsoleFileManager _FileManager;
 
+    /// <summary>Флаг работы консольного файлового менеджера.</summary>
     private bool _CanWork;
 
+    /// <summary>Список команд консольного файлового менеджера.</summary>
     public IReadOnlyList<Command> Commands { get; private set; }
 
+    /// <summary>Сервис сообщений.</summary>
     public IMessageService MessageService => _FileManager.MessageService;
 
-    public ConsoleFileManagerLogic()
+    /// <summary>Инициализация объекта консольного файлового менеджера.</summary>
+    /// <param name="fileManager">Логика работы консольного файлового менеджера.</param>
+    public ConsoleFileManagerLogic(IConsoleFileManager fileManager)
     {
-        _FileManager = new FileManagerLogic(OSNavigator.Navigator, new ConsoleMessageService());
+        _FileManager = fileManager;
 
         Commands = new Command[]
         {
             new ChangeDirectoryCommand("cd", _FileManager),
             new ItemsListCommand("ls", _FileManager),
-            new CopyCommand("cp", _FileManager, new ConsoleClipboard()),
+            new RemoveCommand("rm", _FileManager),
             new InfoCommand("info", _FileManager),
             new HelpCommand("help", this),
             new ExitCommand("exit", this)
         };
     }
 
+    /// <summary>Запуск консольного файлового менеджера.</summary>
     public void Start()
     {
         _CanWork = true;
 
-        FineCommand("help").Execute();
+        FindCommand("help").Execute();
 
         while (_CanWork)
         {
             Console.Write(_FileManager.CurrentDirectory);
             Console.Write("> ");
             var input = Console.ReadLine()!.Split(' ');
-            var command = FineCommand(input[0]);
+            var command = FindCommand(input[0]);
             if (command is not null)
                 command.Execute(input);
             else
@@ -50,14 +58,18 @@ public class ConsoleFileManagerLogic
         }
     }
 
-    private Command FineCommand(string keyWord)
+    /// <summary>Остановка работы консольного файлового менеджера.</summary>
+    public void Stop() => _CanWork = false;
+
+    /// <summary>Поиск команды по ключевому слову.</summary>
+    /// <param name="keyWord">Ключевое слово.</param>
+    /// <returns>Найденная команда.</returns>
+    private Command FindCommand(string keyWord)
     {
         foreach (var command in Commands)
-            if (command.KeyWord == keyWord) 
+            if (command.KeyWord == keyWord.ToLower()) 
                 return command;
 
         return null!;
     }
-
-    public void Stop() => _CanWork = false;
 }

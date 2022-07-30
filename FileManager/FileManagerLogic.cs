@@ -4,19 +4,13 @@ using FileManager.Services;
 namespace FileManager;
 
 /// <summary>Класс, описывающий логику работы файлового менеджера.</summary>
-public class FileManagerLogic
+public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
 {
     /// <summary>Навигатор по каталогам.</summary>
     private readonly INavigator<string> _Navigator;
 
     /// <summary>Системные диски.</summary>
     private readonly CIDrive[] _Drives;
-
-    /// <summary>Элементы текущего каталога.</summary>
-    private CatalogItem[] _ItemsList;
-
-    /// <summary>Навигатор по каталогам.</summary>
-    public INavigator<string> Navigator => _Navigator;
 
     /// <summary>Сервис вывода сообщений в пользотельский интерфейс.</summary>
     public IMessageService MessageService { get; private set; }
@@ -29,15 +23,16 @@ public class FileManagerLogic
     {
         get 
         {
-            if (_ItemsList is null)
+            try
+            {
+                return CatalogItem.GetCatalogItems(_Navigator.Current);
+            }
+            catch (Exception ex)
             {
                 if (MessageService is not null)
-                    MessageService.ShowError($"Нет доступа к содержимому директории {CurrentDirectory}");
-
+                    MessageService.ShowError(ex.Message);
                 return new CatalogItem[0];
             }
-
-            return _ItemsList;
         }
     }
 
@@ -65,7 +60,6 @@ public class FileManagerLogic
         _Navigator = navigator;
         MessageService = messageService; 
         _Drives = CIDrive.GetDrives();
-        UpdateItems();
     }
 
     /// <summary>Изменение текущей директории.</summary>
@@ -81,8 +75,6 @@ public class FileManagerLogic
                 case NavigatorDirection.Back: _Navigator.GoToBack(); break;
                 case NavigatorDirection.Forward: _Navigator.GoToForward(); break;
             }
-
-            UpdateItems();
         }
         catch (Exception ex)
         {
@@ -109,7 +101,6 @@ public class FileManagerLogic
         try
         {
             _Navigator.GoTo(path, true);
-            UpdateItems();
         }
         catch (Exception ex)
         {
@@ -217,6 +208,52 @@ public class FileManagerLogic
         item.Copy(clipboard);
     }
 
+    /// <summary>Копирование элемента каталога.</summary>
+    /// <param name="source">Путь к копируемому элементу.</param>
+    /// <param name="dest">Путь для копирования.</param>
+    /// <exception cref="ArgumentNullException">Параметр не инициализирован или пустой.</exception>
+    public void Copy(string source, string dest)
+    {
+        if (source is null)
+            throw new ArgumentNullException(nameof(source));
+
+        if (dest is null)
+            throw new ArgumentNullException(nameof(dest));
+
+        if (!Path.IsPathRooted(source))
+            source = Path.GetFullPath(Path.Combine(CurrentDirectory, source));
+
+        if (!Path.IsPathRooted(dest))
+            dest = Path.GetFullPath(Path.Combine(CurrentDirectory, dest));
+
+        if (!File.Exists(source) && !Directory.Exists(source))
+        {
+            MessageService.ShowError($"Файл {source} не найден!");
+            return;
+        }
+
+        if (File.Exists(dest) || Directory.Exists(dest))
+        {
+            MessageService.ShowError($"Файл {dest} уже существует!");
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(source))
+                File.Copy(source, dest);
+            else
+                CatalogItem.CopyDirectory(source, dest);
+        }
+        catch
+        {
+            MessageService.ShowError($"Не удалось скопировать файл {source}");
+            return;
+        }
+
+        MessageService.ShowOk($"Файл {source} успешно скопирован");
+    }
+
     /// <summary>Вставка элементов каталога из буфера обмена.</summary>
     /// <param name="clipboard">Буфер обмена.</param>
     /// <param name="path">Путь каталога для вставки.</param>
@@ -233,12 +270,11 @@ public class FileManagerLogic
         {
             clipboard.Paste(path);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
-            MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
-
-        UpdateItems();
     }
 
     /// <summary>Удаление элемента каталога.</summary>
@@ -259,7 +295,8 @@ public class FileManagerLogic
             return;
         }
 
-        UpdateItems();
+        if (MessageService is not null)
+            MessageService.ShowOk($"Файл {item.FullName} успешно удален!");
     }
 
     /// <summary>Получение элемента каталога по пути.</summary>
@@ -269,7 +306,8 @@ public class FileManagerLogic
     {
         if (string.IsNullOrEmpty(path))
         {
-            MessageService.ShowError("Не указан путь!");
+            if (MessageService is not null)
+                MessageService.ShowError("Не указан путь!");
             return null!;
         }
 
@@ -278,7 +316,8 @@ public class FileManagerLogic
 
         if (CatalogItem.GetItemType(path) == CatalogItemType.None)
         {
-            MessageService.ShowError($"Файл {path} не найден!");
+            if (MessageService is not null)
+                MessageService.ShowError($"Файл {path} не найден!");
             return null!;
         }
 
@@ -297,8 +336,6 @@ public class FileManagerLogic
             if (MessageService is not null)
                 MessageService.ShowError(ex.Message);
         }
-
-        UpdateItems();
     }
 
     /// <summary>Создание подкаталога в текущем каталоге.</summary>
@@ -313,8 +350,6 @@ public class FileManagerLogic
             if (MessageService is not null)
                 MessageService.ShowError(ex.Message);
         }
-
-        UpdateItems();
     }
 
     /// <summary>Поиск элементов в текущем каталоге.</summary>
@@ -336,19 +371,6 @@ public class FileManagerLogic
             if (MessageService is not null)
                 MessageService.ShowError(ex.Message);
             throw ex;
-        }
-    }
-
-    /// <summary>Обновление списка элементов текущего каталога.</summary>
-    private void UpdateItems()
-    {
-        try
-        {
-            _ItemsList = CatalogItem.GetCatalogItems(_Navigator.Current);
-        }
-        catch
-        {
-            _ItemsList = null!;
         }
     }
 }

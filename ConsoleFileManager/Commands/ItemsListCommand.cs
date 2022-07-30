@@ -5,13 +5,22 @@ using System.Text;
 
 namespace ConsoleFileManager.Commands;
 
+/// <summary>Класс, описывающий команду вывода списка файлов
+/// и сабдиректорий текущей директории.</summary>
 public class ItemsListCommand : Command
 {
-    private readonly FileManagerLogic _FileManager;
+    /// <summary>Объект логики файлового менеджера.</summary>
+    private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Описание команды.</summary>
     public override string Description => "Список файлов и папок из текущей директории.";
 
-    public ItemsListCommand(string keyWord, FileManagerLogic fileManager) : base(keyWord)
+    /// <summary>Инициализация объекта команды вывода списка файлов
+    /// и сабдиректорий текущей директории.</summary>
+    /// <param name="keyWord">Ключевое слово для поиска команды</param>
+    /// <param name="fileManager">Объект логики файлового менеджера.</param>
+    /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
+    public ItemsListCommand(string keyWord, IConsoleFileManager fileManager) : base(keyWord)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));
@@ -19,6 +28,9 @@ public class ItemsListCommand : Command
         _FileManager = fileManager;
     }
 
+    /// <summary>Выполнение команды вывода списка файлов
+    /// и сабдиректорий текущей директории.</summary>
+    /// <param name="args">Значения параметров команды.</param>
     public override void Execute(params string[] args)
     {
         var items = _FileManager.ItemsList;
@@ -28,19 +40,10 @@ public class ItemsListCommand : Command
         var stringBuilder = new StringBuilder();
 
         foreach (var item in items)
-        {
-            var size = item.ComputedSize;
-
             stringBuilder
-                .Append(item.Type == CatalogItemType.Catalog ? " - d - " : " - f - ")
-                .Append(' ')
-                .Append(item.Name)
-                .Append(' ')
-                .Append(size)
-                .Append(' ')
-                .Append(size is not null ? "KB" : string.Empty)
-                .Append(item != items[items.Length - 1] ? '\n' : string.Empty);
-        }
+                .Append(item.Type == CatalogItemType.Catalog ? " -d- " : " -f- ")
+                .AppendLine(item.Name);
+
         _FileManager.MessageService.ShowOk(stringBuilder.ToString());
     }
 }

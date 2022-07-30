@@ -310,4 +310,36 @@ public abstract class CatalogItem
             throw new InvalidOperationException("Не удалось создать папку!");
         }
     }
+
+    /// <summary>Копирование директории.</summary>
+    /// <param name="source">Директория для копирования.</param>
+    /// <param name="dest">новая диретория.</param>
+    /// <exception cref="InvalidOperationException">Не удалось скопировать директорию.</exception>
+    public static void CopyDirectory(string source, string dest)
+    {
+        try
+        {
+            var directory = new DirectoryInfo(source);
+
+            DirectoryInfo[] directories = directory.GetDirectories();
+
+            Directory.CreateDirectory(dest);
+
+            foreach (FileInfo file in directory.GetFiles())
+            {
+                string path = Path.Combine(dest, file.Name);
+                file.CopyTo(path);
+            }
+
+            foreach (DirectoryInfo dir in directories)
+            {
+                string path = Path.Combine(dest, dir.Name);
+                CopyDirectory(dir.FullName, path);
+            }
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
+        }
+    }
 }

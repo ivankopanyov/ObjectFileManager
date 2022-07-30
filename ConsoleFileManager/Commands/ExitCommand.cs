@@ -4,12 +4,19 @@ using System.Text;
 
 namespace ConsoleFileManager.Commands;
 
+/// <summary>Класс, описывающий команду выхода из приложения.</summary>
 public class ExitCommand : Command
 {
+    /// <summary>Объект логики консольного файлового менеджера.</summary>
     private readonly ConsoleFileManagerLogic _FileManager;
 
+    /// <summary>Описание команды.</summary>
     public override string Description => "Выход из приложения.";
 
+    /// <summary>Инициализация объекта команды выхода из приложения.</summary>
+    /// <param name="keyWord">Ключевое слово для поиска команды</param>
+    /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
+    /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
     public ExitCommand(string keyWord, ConsoleFileManagerLogic fileManager) : base(keyWord)
     {
         if (fileManager is null)
@@ -18,5 +25,7 @@ public class ExitCommand : Command
         _FileManager = fileManager;
     }
 
+    /// <summary>Выполнение команды выхода из приложения.</summary>
+    /// <param name="args">Значения параметров команды.</param>
     public override void Execute(params string[] args) => _FileManager.Stop();
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
+using FileManager.Content;
 using FileManager.Services;
 
 namespace ObjectFileManager.Services;
@@ -225,39 +226,7 @@ public sealed class WindowsClipboard : IClipboard<string, string>
         try
         {
             if (isMove) Directory.Move(source, dest);
-            else CopyDirectory(source, dest);
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
-        }
-    }
-
-    /// <summary>Копирование директории.</summary>
-    /// <param name="source">Директория для копирования.</param>
-    /// <param name="dest">новая диретория.</param>
-    /// <exception cref="InvalidOperationException">Не удалось скопировать директорию.</exception>
-    static void CopyDirectory(string source, string dest)
-    {
-        try
-        {
-            var directory = new DirectoryInfo(source);
-
-            DirectoryInfo[] directories = directory.GetDirectories();
-
-            Directory.CreateDirectory(dest);
-
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                string path = Path.Combine(dest, file.Name);
-                file.CopyTo(path);
-            }
-
-            foreach (DirectoryInfo dir in directories)
-            {
-                string path = Path.Combine(dest, dir.Name);
-                CopyDirectory(dir.FullName, path);
-            }
+            else CatalogItem.CopyDirectory(source, dest);
         }
         catch
         {

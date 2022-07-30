@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
+using FileManager;
 using FileManager.Editor;
+using FileManager.Services;
 using ObjectFileManager.Services;
 using ObjectFileManager.ViewModels;
 using ObjectFileManager.Views;
@@ -16,7 +18,7 @@ public partial class App : Application
         { 
             IgnoreOk = true
         };
-        var dialogService = new WindowService();
+        var windowService = new WindowService();
 
         var action = (object obj) =>
         {
@@ -27,14 +29,16 @@ public partial class App : Application
                 throw new TypeAccessException(nameof(obj));
 
             var window = new EditorWindow();
-            window.DataContext = new EditorViewModel((FileEditor)obj, new Action(window.Close), dialogService, messageService);
+            window.DataContext = new EditorViewModel((FileEditor)obj, new Action(window.Close), windowService, messageService);
             window.ShowDialog();
         };
-        dialogService.Register("editor", action);
+        windowService.Register("editor", action);
+
+        var fileManager = new FileManagerLogic(OSNavigator.Navigator, messageService);
 
         var mainWindow = new MainWindow()
         {
-            DataContext = new MainViewModel(dialogService, messageService)
+            DataContext = new MainViewModel(fileManager, windowService)
         };
         mainWindow.Show();
     }

@@ -17,7 +17,7 @@ namespace ObjectFileManager.ViewModels;
 public class MainViewModel : ViewModel
 {
     /// <summary>Логика работы файлового менеджера.</summary>
-    private readonly FileManagerLogic _FileManager;
+    private readonly IGuiFileManager _FileManager;
 
     /// <summary>Текущий путь.</summary>
     private string _PathLine;
@@ -216,11 +216,11 @@ public class MainViewModel : ViewModel
     public ICommand ExitCommand => new Command((obj) => App.Current.Shutdown());
 
     /// <summary>Инициализация объекта.</summary>
+    /// <param name="fileManager">Логика работы файлового менеджера.</param>
     /// <param name="windowService">Сервис работы с окнами.</param>
-    /// <param name="messageService">Сервис сообщений.</param>
-    public MainViewModel(IWindowService<object> windowService, IMessageService messageService) : base(windowService)
+    public MainViewModel(IGuiFileManager fileManager, IWindowService<object> windowService) : base(windowService)
     {
-        _FileManager = new FileManagerLogic(OSNavigator.Navigator, messageService);
+        _FileManager = fileManager;
         Drives = new(_FileManager.Drives);
         Update(_FileManager.CurrentDirectory);
     }
