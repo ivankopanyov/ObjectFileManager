@@ -218,7 +218,7 @@ public class MainViewModel : ViewModel
     /// <summary>Инициализация объекта.</summary>
     /// <param name="windowService">Сервис работы с окнами.</param>
     /// <param name="messageService">Сервис сообщений.</param>
-    public MainViewModel(IWindowService<object> windowService, IMessageService messageService) : base(windowService, messageService)
+    public MainViewModel(IWindowService<object> windowService, IMessageService messageService) : base(windowService)
     {
         _FileManager = new FileManagerLogic(OSNavigator.Navigator, messageService);
         Drives = new(_FileManager.Drives);
@@ -249,7 +249,7 @@ public class MainViewModel : ViewModel
             }
             catch (Exception ex)
             {
-                _MessageService.ShowError(ex.Message);
+                _FileManager.MessageService.ShowError(ex.Message);
             }
 
             return;

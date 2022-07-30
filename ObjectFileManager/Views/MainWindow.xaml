@@ -254,7 +254,7 @@
                         <TextBlock Text="Тип: "
                                    Grid.Column="0" Grid.Row="2"
                                    Margin="5,5,0,0"/>
-                        <TextBlock Text="{Binding SelectedItem.Type}"
+                        <TextBlock Text="{Binding SelectedItem.DisplayType}"
                                    Grid.Column="1" Grid.Row="2"
                                    Margin="5,5,5,0"/>
                         <TextBlock Text="Размер, KB: "

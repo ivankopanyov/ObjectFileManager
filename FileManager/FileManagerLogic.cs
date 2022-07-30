@@ -9,9 +9,6 @@ public class FileManagerLogic
     /// <summary>Навигатор по каталогам.</summary>
     private readonly INavigator<string> _Navigator;
 
-    /// <summary>Сервис вывода сообщений в пользотельский интерфейс.</summary>
-    private readonly IMessageService _MessageService;
-
     /// <summary>Системные диски.</summary>
     private readonly CIDrive[] _Drives;
 
@@ -20,6 +17,9 @@ public class FileManagerLogic
 
     /// <summary>Навигатор по каталогам.</summary>
     public INavigator<string> Navigator => _Navigator;
+
+    /// <summary>Сервис вывода сообщений в пользотельский интерфейс.</summary>
+    public IMessageService MessageService { get; private set; }
 
     /// <summary>Текущая директория.</summary>
     public string CurrentDirectory => _Navigator.Current;
@@ -49,7 +49,7 @@ public class FileManagerLogic
             throw new ArgumentNullException(nameof(navigator));
 
         _Navigator = navigator;
-        _MessageService = messageService; 
+        MessageService = messageService; 
         _Drives = CIDrive.GetDrives();
         UpdateItems();
     }
@@ -72,8 +72,8 @@ public class FileManagerLogic
         }
         catch (Exception ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
         
         return _Navigator.Current;
@@ -87,8 +87,8 @@ public class FileManagerLogic
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError("Путь не указан!");
+            if (MessageService is not null)
+                MessageService.ShowError("Путь не указан!");
             throw new ArgumentNullException(nameof(path));
         }
 
@@ -99,8 +99,8 @@ public class FileManagerLogic
         }
         catch (Exception ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
 
         return _Navigator.Current;
@@ -125,8 +125,8 @@ public class FileManagerLogic
         }
         catch (Exception ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
 
             throw new InvalidOperationException(ex.Message);
         }
@@ -154,8 +154,8 @@ public class FileManagerLogic
         }
         catch (InvalidOperationException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
     }
 
@@ -173,8 +173,8 @@ public class FileManagerLogic
 
         if (!item.Exists)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError($"Источник {item.FullName} не найден!");
+            if (MessageService is not null)
+                MessageService.ShowError($"Источник {item.FullName} не найден!");
             return;
         }
 
@@ -195,8 +195,8 @@ public class FileManagerLogic
 
         if (!item.Exists)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError($"Источник {item.FullName} не найден!");
+            if (MessageService is not null)
+                MessageService.ShowError($"Источник {item.FullName} не найден!");
             return;
         }
 
@@ -221,7 +221,7 @@ public class FileManagerLogic
         }
         catch (InvalidOperationException ex)
         {
-            _MessageService.ShowError(ex.Message);
+            MessageService.ShowError(ex.Message);
         }
 
         UpdateItems();
@@ -231,7 +231,7 @@ public class FileManagerLogic
     /// <param name="item">Удаляемый элемент каталога.</param>
     public void Remove(CatalogItem item)
     {
-        if (_MessageService is not null && !_MessageService.ShowYesNo($"Вы уверены, что хотите удалить {item.Name}?"))
+        if (MessageService is not null && !MessageService.ShowYesNo($"Вы уверены, что хотите удалить {item.Name}?"))
             return;
 
         try
@@ -240,8 +240,8 @@ public class FileManagerLogic
         }
         catch (UnauthorizedAccessException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
             return;
         }
 
@@ -257,8 +257,8 @@ public class FileManagerLogic
         }
         catch (InvalidOperationException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
 
         UpdateItems();
@@ -273,8 +273,8 @@ public class FileManagerLogic
         }
         catch (InvalidOperationException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
         }
 
         UpdateItems();
@@ -296,8 +296,8 @@ public class FileManagerLogic
         }
         catch (InvalidOperationException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
             throw ex;
         }
     }
@@ -311,8 +311,8 @@ public class FileManagerLogic
         }
         catch (UnauthorizedAccessException ex)
         {
-            if (_MessageService is not null)
-                _MessageService.ShowError(ex.Message);
+            if (MessageService is not null)
+                MessageService.ShowError(ex.Message);
 
             _ItemsList = new CatalogItem[0];
         }

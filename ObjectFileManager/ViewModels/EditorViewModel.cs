@@ -11,6 +11,9 @@ namespace ObjectFileManager.ViewModels;
 /// <summary>Класс, описывающий ViewModel окна редактора.</summary>
 public class EditorViewModel : ViewModel
 {
+    /// <summary>Сервис сообщений.</summary>
+    protected readonly IMessageService _MessageService;
+
     /// <summary>Закрытие окна.</summary>
     protected readonly Action _Close;
 
@@ -56,13 +59,16 @@ public class EditorViewModel : ViewModel
     /// <param name="messageService">Сервис сообщение.</param>
     /// <exception cref="ArgumentNullException">Параметр не инициализирован.</exception>
     public EditorViewModel(IEditor<string> editor, Action close, IWindowService<object> windowService, IMessageService messageService) : 
-        base(windowService, messageService) 
+        base(windowService) 
     {
         if (close is null)
             throw new ArgumentNullException(nameof(close));
 
         if (editor is null)
             throw new ArgumentNullException(nameof(editor));
+
+        if (messageService is null)
+            throw new ArgumentNullException(nameof(messageService));
 
         try
         {
@@ -77,6 +83,7 @@ public class EditorViewModel : ViewModel
         }
 
         _Close = close;
+        _MessageService = messageService;
     }
 
     /// <summary>Команда сохраниния содержимого файла.</summary>

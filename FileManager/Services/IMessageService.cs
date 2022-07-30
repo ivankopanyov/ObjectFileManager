@@ -3,6 +3,10 @@
 /// <summary>Сервис вывода сообщений.</summary>
 public interface IMessageService
 {
+    /// <summary>Вывод сообщения об удачном завершении операции.</summary>
+    /// <param name="message">Текст сообщения об удачном завершении операции.</param>
+    void ShowOk(string message);
+
     /// <summary>Вывод сообщения об ошибке.</summary>
     /// <param name="message">Текст сообщения об ошибке.</param>
     void ShowError(string message);

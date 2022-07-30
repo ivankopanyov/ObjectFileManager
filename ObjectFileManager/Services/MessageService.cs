@@ -6,6 +6,17 @@ namespace ObjectFileManager.Services;
 /// <summary>Сервис вывода сообщений в интерфейс пользователя.</summary>
 public class MessageBoxService : IMessageService
 {
+    /// <summary>Флаг для вывода сообщения об удачном завершении операции.</summary>
+    public bool IgnoreOk { get; set; }
+
+    /// <summary>Вывод сообщения об удачном завершении операции.</summary>
+    /// <param name="message">Текст сообщения об удачном завершении операции.</param>
+    public void ShowOk(string message)
+    { 
+        if (!IgnoreOk)
+            MessageBox.Show(message, "Сообщение!", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
     /// <summary>Вывод сообщения об ошибке.</summary>
     /// <param name="message">Текст сообщения об ошибке.</param>
     public void ShowError(string message) =>

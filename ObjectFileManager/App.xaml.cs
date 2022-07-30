@@ -12,7 +12,10 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
-        var messageService = new MessageBoxService();
+        var messageService = new MessageBoxService()
+        { 
+            IgnoreOk = true
+        };
         var dialogService = new WindowService();
 
         var action = (object obj) =>
