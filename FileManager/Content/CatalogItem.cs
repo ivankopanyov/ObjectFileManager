@@ -161,6 +161,16 @@ public abstract class CatalogItem
         return CatalogItemType.None;
     }
 
+    /// <summary>Получение элемента каталога по пути.</summary>
+    /// <param name="path">Путь к элементу каталога.</param>
+    /// <returns>Элемент каталога.</returns>
+    public static CatalogItem GetCatalogItem(string path) => GetItemType(path) switch
+    {
+        CatalogItemType.Catalog => new CICatalog(new DirectoryInfo(path)),
+        CatalogItemType.File => new CIFile(new FileInfo(path)),
+        _ => null!
+    };
+
     /// <summary>Получение элементов каталога из каталога по укаанному пути.</summary>
     /// <param name="path">Путь к каталогу.</param>
     /// <returns>Элементы, содержащиеся в каталоге.</returns>

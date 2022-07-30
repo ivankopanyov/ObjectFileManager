@@ -8,7 +8,7 @@ using FileManager.Services;
 namespace ObjectFileManager.Services;
 
 /// <summary>Класс для работы с буфером обмена операционной системы.</summary>
-public class WindowsClipboard : IClipboard<string, string>
+public sealed class WindowsClipboard : IClipboard<string, string>
 {
     /// <summary>Объект класса буфера обмена операционной системы.</summary>
     private static readonly WindowsClipboard _Clipboard = new WindowsClipboard();
@@ -21,9 +21,10 @@ public class WindowsClipboard : IClipboard<string, string>
 
     /// <summary>Проверка на содержание данных в буфере обмена.</summary>
     public bool ContainsData => System.Windows.Clipboard.ContainsFileDropList();
-
     /// <summary>Вырезание в буфер обмена.</summary>
     /// <param name="path">Путь вырезаемого элемента.</param>
+    /// <exception cref="ArgumentNullException">Путь не инициализирован или пустой.</exception>
+    /// <exception cref="FileNotFoundException">Источник не найден!</exception>
     public void Cut(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -37,6 +38,9 @@ public class WindowsClipboard : IClipboard<string, string>
 
     /// <summary>Вырезание нескольких элементов в буфер обмена.</summary>
     /// <param name="paths">Перечисление путей вырезаемых объектов.</param>
+    /// <exception cref="ArgumentNullException">Перечисление путей не инициализировано или пустое.</exception>
+    /// <exception cref="ArgumentException">Перечисление содержит не инициалированный или пустой элемент.</exception>
+    /// <exception cref="FileNotFoundException">Источник не найден.</exception>
     public void Cut(IEnumerable<string> paths)
     {
         if (paths is null)
@@ -62,6 +66,8 @@ public class WindowsClipboard : IClipboard<string, string>
 
     /// <summary>Копирование в буфер обмена.</summary>
     /// <param name="path">Путь копируемого элемента.</param>
+    /// <exception cref="ArgumentNullException">Путь не инициализирован или пустой.</exception>
+    /// <exception cref="FileNotFoundException">Источник не найден!</exception>
     public void Copy(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -76,6 +82,9 @@ public class WindowsClipboard : IClipboard<string, string>
 
     /// <summary>Копирование нескольких элементов в буфер обмена.</summary>
     /// <param name="paths">Перечисление путей копируемых объектов.</param>
+    /// <exception cref="ArgumentNullException">Перечисление путей не инициализировано или пустое.</exception>
+    /// <exception cref="ArgumentException">Перечисление содержит не инициалированный или пустой элемент.</exception>
+    /// <exception cref="FileNotFoundException">Источник не найден.</exception>
     public void Copy(IEnumerable<string> paths)
     {
         if (paths is null)
@@ -102,13 +111,19 @@ public class WindowsClipboard : IClipboard<string, string>
 
     /// <summary>Вставка элементов из буфера обмена.</summary>
     /// <param name="path">Путь к каталогу для вставки.</param>
+    /// <exception cref="ArgumentNullException">Путь не инициализирован или пустой.</exception>
+    /// <exception cref="DirectoryNotFoundException">Путь не найден.</exception>
+    /// <exception cref="InvalidOperationException">Не удалось скопировать файлы.</exception>
     public void Paste(string path)
     {
-        if (!ContainsData)
-            throw new ArgumentNullException(nameof(path));
+        if (string.IsNullOrEmpty(path))
+            new ArgumentNullException(nameof(path));
 
         if (!Directory.Exists(path))
             throw new DirectoryNotFoundException($"Путь {path} не найден.");
+
+        if (!ContainsData)
+            throw new InvalidOperationException("Буфер обмена пуст.");
 
         var files = System.Windows.Clipboard.GetFileDropList();
 

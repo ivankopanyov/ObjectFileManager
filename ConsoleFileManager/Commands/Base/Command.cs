@@ -4,7 +4,7 @@ public abstract class Command
 {
     public string KeyWord { get; private set; }
 
-    public string Description { get; set; }
+    public abstract string Description { get; }
 
     public abstract void Execute(params string[] args);
 

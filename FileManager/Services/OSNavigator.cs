@@ -1,7 +1,7 @@
 ﻿namespace FileManager.Services;
 
 /// <summary>Навигатор по файловой системе Windows.</summary>
-public class OSNavigator : INavigator<string>
+public sealed class OSNavigator : INavigator<string>
 {
     /// <summary>Объект навигатора.</summary>
     private readonly static OSNavigator _Navigator = new OSNavigator();
@@ -152,7 +152,7 @@ public class OSNavigator : INavigator<string>
             throw new ArgumentNullException(nameof(path));
 
         if (!rootPath && !Path.IsPathRooted(path))
-            Path.GetFullPath(Path.Combine(Current, path));
+            path = Path.GetFullPath(Path.Combine(Current, path));
 
         if (!Directory.Exists(path))
             throw new DirectoryNotFoundException($"Директория {path} не найдена!");

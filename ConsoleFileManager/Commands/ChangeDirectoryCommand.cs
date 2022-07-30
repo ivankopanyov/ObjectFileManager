@@ -3,11 +3,13 @@ using FileManager;
 
 namespace ConsoleFileManager.Commands;
 
-public class ChangeDirectoryCommands : Command
+public class ChangeDirectoryCommand : Command
 {
-    public FileManagerLogic _FileManager;
+    private readonly FileManagerLogic _FileManager;
 
-    public ChangeDirectoryCommands(string keyWord, FileManagerLogic fileManager) : base(keyWord)
+    public override string Description => "Изменение текущей директории."; 
+
+    public ChangeDirectoryCommand(string keyWord, FileManagerLogic fileManager) : base(keyWord)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));
@@ -26,12 +28,6 @@ public class ChangeDirectoryCommands : Command
             return;
         }
 
-        if (args.Length > 2)
-        {
-            _FileManager.MessageService.ShowError($"Неизвестный параметр {args[2]}");
-            return;
-        }
-
-        _FileManager.ChangeDirectory(args[1]);
+        _FileManager.ChangeDirectory(string.Join(' ', args, 1, args.Length - 1).Trim());
     }
 }

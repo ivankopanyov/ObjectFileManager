@@ -25,7 +25,21 @@ public class FileManagerLogic
     public string CurrentDirectory => _Navigator.Current;
 
     /// <summary>Элементы текущего каталога.</summary>
-    public CatalogItem[] ItemsList => _ItemsList;
+    public CatalogItem[] ItemsList
+    {
+        get 
+        {
+            if (_ItemsList is null)
+            {
+                if (MessageService is not null)
+                    MessageService.ShowError($"Нет доступа к содержимому директории {CurrentDirectory}");
+
+                return new CatalogItem[0];
+            }
+
+            return _ItemsList;
+        }
+    }
 
     /// <summary>Системные диски.</summary>
     public CIDrive[] Drives => _Drives;
@@ -248,6 +262,29 @@ public class FileManagerLogic
         UpdateItems();
     }
 
+    /// <summary>Получение элемента каталога по пути.</summary>
+    /// <param name="path">Путь к элементу каталога.</param>
+    /// <returns>Элемент каталога.</returns>
+    public CatalogItem GetCatalogItem(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            MessageService.ShowError("Не указан путь!");
+            return null!;
+        }
+
+        if (!Path.IsPathRooted(path))
+            path = Path.GetFullPath(Path.Combine(CurrentDirectory, path));
+
+        if (CatalogItem.GetItemType(path) == CatalogItemType.None)
+        {
+            MessageService.ShowError($"Файл {path} не найден!");
+            return null!;
+        }
+
+        return CatalogItem.GetCatalogItem(path);
+    }
+
     /// <summary>Создание нового файла в текущем каталоге.</summary>
     public void CreateFile()
     {
@@ -309,12 +346,9 @@ public class FileManagerLogic
         {
             _ItemsList = CatalogItem.GetCatalogItems(_Navigator.Current);
         }
-        catch (UnauthorizedAccessException ex)
+        catch
         {
-            if (MessageService is not null)
-                MessageService.ShowError(ex.Message);
-
-            _ItemsList = new CatalogItem[0];
+            _ItemsList = null!;
         }
     }
 }

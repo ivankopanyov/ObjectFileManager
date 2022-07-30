@@ -2,7 +2,7 @@
 
 namespace ConsoleFileManager.Services;
 
-public class MessageService : IMessageService
+public class ConsoleMessageService : IMessageService
 {
     public void ShowError(string message)
     {
