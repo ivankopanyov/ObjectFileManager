@@ -17,10 +17,9 @@ public class ItemsListCommand : Command
 
     /// <summary>Инициализация объекта команды вывода списка файлов
     /// и сабдиректорий текущей директории.</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public ItemsListCommand(string keyWord, IConsoleFileManager fileManager) : base(keyWord)
+    public ItemsListCommand(IConsoleFileManager fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));

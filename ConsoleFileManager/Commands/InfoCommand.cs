@@ -18,10 +18,9 @@ public class InfoCommand : Command
     public override string Description => "Информация о файле или директории.";
 
     /// <summary>Инициализация объекта команды вывода информации о файле или директории.</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public InfoCommand(string keyWord, IConsoleFileManager fileManager) : base(keyWord)
+    public InfoCommand(IConsoleFileManager fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));

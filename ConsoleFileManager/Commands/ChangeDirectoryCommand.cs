@@ -13,10 +13,9 @@ public class ChangeDirectoryCommand : Command
     public override string Description => "Изменение текущей директории.";
 
     /// <summary>Инициализация объекта команды изменения текущей директории.</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public ChangeDirectoryCommand(string keyWord, IConsoleFileManager fileManager) : base(keyWord)
+    public ChangeDirectoryCommand(IConsoleFileManager fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));

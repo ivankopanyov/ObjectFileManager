@@ -14,10 +14,9 @@ public class ExitCommand : Command
     public override string Description => "Выход из приложения.";
 
     /// <summary>Инициализация объекта команды выхода из приложения.</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public ExitCommand(string keyWord, ConsoleFileManagerLogic fileManager) : base(keyWord)
+    public ExitCommand(ConsoleFileManagerLogic fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));

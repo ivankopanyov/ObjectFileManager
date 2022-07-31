@@ -1,6 +1,5 @@
 ﻿using ConsoleFileManager.Commands;
 using ConsoleFileManager.Commands.Base;
-using ConsoleFileManager.Services;
 using FileManager;
 using FileManager.Services;
 
@@ -15,26 +14,45 @@ public class ConsoleFileManagerLogic
     /// <summary>Флаг работы консольного файлового менеджера.</summary>
     private bool _CanWork;
 
-    /// <summary>Список команд консольного файлового менеджера.</summary>
-    public IReadOnlyList<Command> Commands { get; private set; }
+    /// <summary>Команды консольного файлового менеджера.</summary>
+    public IReadOnlyDictionary<string, Command> Commands { get; private set; }
 
     /// <summary>Сервис сообщений.</summary>
-    public IMessageService MessageService => _FileManager.MessageService;
+    public IConsoleMessageService MessageService { get; init; }
 
     /// <summary>Инициализация объекта консольного файлового менеджера.</summary>
-    /// <param name="fileManager">Логика работы консольного файлового менеджера.</param>
-    public ConsoleFileManagerLogic(IConsoleFileManager fileManager)
+    /// <param name="navigator">Навигатор по файловой системе.</param>
+    /// <param name="messageService">Сервис сообщений.</param>
+    /// <exception cref="ArgumentNullException">Параметр не инициализирован.</exception>
+    public ConsoleFileManagerLogic(INavigator<string> navigator, IConsoleMessageService messageService)
     {
-        _FileManager = fileManager;
+        if (navigator is null)
+            throw new ArgumentNullException(nameof(navigator));
 
-        Commands = new Command[]
+        if (messageService is null)
+            throw new ArgumentNullException(nameof(messageService));
+
+        MessageService = messageService;
+
+        _FileManager = new FileManagerLogic(navigator, messageService);
+
+        var changeDirectoryCommand = new ChangeDirectoryCommand(_FileManager);
+        var itemsListCommand = new ItemsListCommand(_FileManager);
+        var changeAttrsCommand = new ChangeAttrsCommand(_FileManager);
+        var removeCommand = new RemoveCommand(_FileManager);
+        var infoCommand = new InfoCommand(_FileManager);
+        var helpCommand = new HelpCommand(this);
+        var exitCommand = new ExitCommand(this);
+
+        Commands = new Dictionary<string, Command>
         {
-            new ChangeDirectoryCommand("cd", _FileManager),
-            new ItemsListCommand("ls", _FileManager),
-            new RemoveCommand("rm", _FileManager),
-            new InfoCommand("info", _FileManager),
-            new HelpCommand("help", this),
-            new ExitCommand("exit", this)
+            { "cd", changeDirectoryCommand },
+            { "ls", itemsListCommand },
+            { "ca", changeAttrsCommand },
+            { "rm", removeCommand },
+            { "info", infoCommand },
+            { "help", helpCommand},
+            { "exit", exitCommand }
         };
     }
 
@@ -43,33 +61,22 @@ public class ConsoleFileManagerLogic
     {
         _CanWork = true;
 
-        FindCommand("help").Execute();
+        Commands["help"].Execute();
 
         while (_CanWork)
         {
-            Console.Write(_FileManager.CurrentDirectory);
-            Console.Write("> ");
-            var input = Console.ReadLine()!.Split(' ');
-            var command = FindCommand(input[0]);
-            if (command is not null)
-                command.Execute(input);
-            else
-                _FileManager.MessageService.ShowError($"Команда {input[0]} не найдена!");
+            MessageService.ShowMessage($"{_FileManager.CurrentDirectory}> ");
+            var input = MessageService.InputLine().Split(' ');
+            var commandKey = input[0];
+            if (Commands.TryGetValue(commandKey, out var command))
+            {
+                command!.Execute(input);
+                continue;
+            }
+            _FileManager.MessageService.ShowError($"Команда {input[0]} не найдена!");
         }
     }
 
     /// <summary>Остановка работы консольного файлового менеджера.</summary>
     public void Stop() => _CanWork = false;
-
-    /// <summary>Поиск команды по ключевому слову.</summary>
-    /// <param name="keyWord">Ключевое слово.</param>
-    /// <returns>Найденная команда.</returns>
-    private Command FindCommand(string keyWord)
-    {
-        foreach (var command in Commands)
-            if (command.KeyWord == keyWord.ToLower()) 
-                return command;
-
-        return null!;
-    }
 }

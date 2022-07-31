@@ -14,10 +14,9 @@ public class RemoveCommand : Command
     public override string Description => "Удаление файла или каталога.";
 
     /// <summary>Инициализация объекта команды удаления файла или директории..</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public RemoveCommand(string keyWord, IConsoleFileManager fileManager) : base(keyWord)
+    public RemoveCommand(IConsoleFileManager fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));

@@ -3,8 +3,20 @@
 namespace ConsoleFileManager.Services;
 
 /// <summary>Сервис сообщений для консольного интерфейса.</summary>
-public class ConsoleMessageService : IMessageService
+public class ConsoleMessageService : IConsoleMessageService
 {
+    /// <summary>Ввод данных пользователем.</summary>
+    /// <returns>Результат ввода .</returns>
+    public string InputLine() => Console.ReadLine()!;
+
+    /// <summary>Вывод сщщбщения в консоль.</summary>
+    /// <param name="message">Текст сообщения.</param>
+    public void ShowMessage(string message) => Console.Write(message);
+
+    /// <summary>Вывод сщщбщения в консоль с переносом строки.</summary>
+    /// <param name="message">Текст сообщения.</param>
+    public void ShowMessageLine(string message) => Console.WriteLine(message);
+
     /// <summary>Вывод сообщения об ошибке в консоль.</summary>
     /// <param name="message">Сообщение об ошибке.</param>
     public void ShowError(string message)

@@ -13,10 +13,9 @@ public class HelpCommand : Command
     public override string Description => "Список команд с описанием.";
 
     /// <summary>Инициализация объекта команды вывода информации о командах приложения.</summary>
-    /// <param name="keyWord">Ключевое слово для поиска команды</param>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
-    public HelpCommand(string keyWord, ConsoleFileManagerLogic fileManager) : base(keyWord)
+    public HelpCommand(ConsoleFileManagerLogic fileManager)
     {
         if (fileManager is null)
             throw new ArgumentNullException(nameof(fileManager));
@@ -35,10 +34,9 @@ public class HelpCommand : Command
         foreach (var command in _FileManager.Commands)
         {
             stringBuilder
-                .Append(command.KeyWord)
+                .Append(command.Key)
                 .Append(" - ")
-                .Append(command.Description)
-                .Append(command != _FileManager.Commands[_FileManager.Commands.Count - 1] ? '\n' : string.Empty);
+                .AppendLine(command.Value.Description);
         }
         _FileManager.MessageService.ShowOk(stringBuilder.ToString());
     }
