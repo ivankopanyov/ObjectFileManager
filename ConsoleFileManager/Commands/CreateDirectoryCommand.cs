@@ -1,6 +1,5 @@
 ﻿using ConsoleFileManager.Commands.Base;
 using FileManager;
-using FileManager.Content;
 
 namespace ConsoleFileManager.Commands;
 
@@ -13,12 +12,12 @@ public class CreateDirectoryCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:\folder_name\new_folder_name",
-        "\"..\\folder_name\\new folder name\""
+        @"C:\dir_name\new_dir_name",
+        "\"..\\dir_name\\new dir name\""
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Создание нового файла.";
+    public override string Description => "Создание новой директории.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;
@@ -43,7 +42,7 @@ public class CreateDirectoryCommand : Command
 
         if (args.Length <= 1)
         {
-            _FileManager.MessageService.ShowError($"Не указано имя новой папки!");
+            _FileManager.MessageService.ShowError($"Не указано имя новой директории!");
             return;
         }
 
@@ -51,10 +50,10 @@ public class CreateDirectoryCommand : Command
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            _FileManager.MessageService.ShowError($"Не указано имя новой папки!");
+            _FileManager.MessageService.ShowError($"Не указано имя новой директории!");
             return;
         }
 
-        _FileManager.CreateCatalog(path);
+        _FileManager.CreateDirectory(path);
     }
 }

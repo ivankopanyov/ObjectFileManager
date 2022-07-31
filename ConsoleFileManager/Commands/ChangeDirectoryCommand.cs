@@ -12,8 +12,8 @@ public class ChangeDirectoryCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:\folder_name\file_name",
-        @"..\folder_name"
+        @"C:\dir_name\file_name",
+        @"..\dir_name"
     };
 
     /// <summary>Описание команды.</summary>

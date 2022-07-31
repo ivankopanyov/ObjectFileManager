@@ -1,12 +1,12 @@
 ﻿namespace FileManager.Content;
 
-/// <summary>Класс, описывающий каталог.</summary>
-internal sealed class CICatalog : CatalogItem
+/// <summary>Класс, описывающий директорию.</summary>
+internal sealed class CIDirectory : DirectoryItem
 {
     /// <summary>Директория, описываемая текущим классом.</summary>
     private readonly DirectoryInfo _Directory;
 
-    /// <summary>Имя каталога.</summary>
+    /// <summary>Имя директории.</summary>
     public override string Name
     {
         get => _Directory.Name;
@@ -31,39 +31,39 @@ internal sealed class CICatalog : CatalogItem
 
             catch (Exception ex) when (ex is System.Security.SecurityException || ex is UnauthorizedAccessException)
             {
-                throw new UnauthorizedAccessException("Нет доступа для переименования папки!");
+                throw new UnauthorizedAccessException("Нет доступа для переименования директории!");
             }
             catch (DirectoryNotFoundException)
             {
-                throw new DirectoryNotFoundException("Папка не найден!");
+                throw new DirectoryNotFoundException("Директория не найден!");
             }
             catch
             {
-                throw new InvalidOperationException("Не удалось переименовать папку!");
+                throw new InvalidOperationException("Не удалось переименовать директорию!");
             }
         }
     }
 
-    /// <summary>Имя каталога без расширения. Совпадает с именем каталога.</summary>
+    /// <summary>Имя директории без расширения. Совпадает с именем директории.</summary>
     public override string NameWithoutExtension => Name;
 
-    /// <summary>Расширение каталога. Всегда возвращает null.</summary>
+    /// <summary>Расширение директории. Всегда возвращает null.</summary>
     public override string Exstension => null!;
 
-    /// <summary>Полное имя каталога, включающее путь к каталогу.</summary>
+    /// <summary>Полное имя директории, включающее путь к директории.</summary>
     public override string FullName => Path.GetFullPath(_Directory.FullName);
 
-    /// <summary>Тип. Всегда возвращает Catalog.</summary>
-    public override CatalogItemType Type => CatalogItemType.Catalog;
+    /// <summary>Тип. Всегда возвращает Directory.</summary>
+    public override DirectoryItemType Type => DirectoryItemType.Directory;
 
     /// <summary>Тип, отображаемый в интерфейсе пользователя.</summary>
-    public override string DisplayType => "Папка с файлами";
+    public override string DisplayType => "Директория";
 
-    /// <summary>Размер каталога. Всегда возвращает null.</summary>
+    /// <summary>Размер директории. Всегда возвращает null.</summary>
     public override long? Size => null;
 
-    /// <summary>Вычисляемый размер каталога в килобайтах, 
-    /// включающий размер всех содержащихся в нем фалов и подкаталогов.</summary>
+    /// <summary>Вычисляемый размер директории в килобайтах, 
+    /// включающий размер всех содержащихся в нем файлов и сабдиректорий.</summary>
     public override long? ComputedSize
     {
         get
@@ -79,7 +79,7 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
-    /// <summary>Дата и время создания каталога.</summary>
+    /// <summary>Дата и время создания директории.</summary>
     public override DateTime CreateDate
     {
         get
@@ -95,7 +95,7 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
-    /// <summary>Дата и вемя последнего изменения каталога.</summary>
+    /// <summary>Дата и вемя последнего изменения директории.</summary>
     public override DateTime UpdateDate
     {
         get
@@ -111,15 +111,15 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
-    /// <summary>Проверка на существование каталога.</summary>
+    /// <summary>Проверка на существование директории.</summary>
     public override bool Exists => Directory.Exists(FullName);
 
-    /// <summary>Инициализация объекта каталога.</summary>
+    /// <summary>Инициализация объекта директории.</summary>
     /// <param name="directory">Директория, описываемая текущим классом.</param>
-    public CICatalog(DirectoryInfo directory) => _Directory = directory;
+    public CIDirectory(DirectoryInfo directory) => _Directory = directory;
 
-    /// <summary>Удаление каталога.</summary>
-    /// <exception cref="UnauthorizedAccessException">Нет доступа для удаления каталога.</exception>
+    /// <summary>Удаление директории.</summary>
+    /// <exception cref="UnauthorizedAccessException">Нет доступа для удаления директории.</exception>
     public override void Remove()
     {
         if (!_Directory.Exists) return;

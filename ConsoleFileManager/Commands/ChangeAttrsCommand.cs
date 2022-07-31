@@ -13,12 +13,12 @@ public class ChangeAttrsCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"hidden=true C:\folder_name\file_name",
-        @"readonly=false hidden=true ..\folder_name"
+        @"hidden=true C:\dir_name\file_name",
+        @"readonly=false hidden=true ..\dir_name"
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Изменение атрибутов файла или каталога.";
+    public override string Description => "Изменение атрибутов файла или директории.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;
@@ -82,7 +82,7 @@ public class ChangeAttrsCommand : Command
         if (!Path.IsPathRooted(path))
             path = Path.GetFullPath(Path.Combine(_FileManager.CurrentDirectory, path));
 
-        var item = CatalogItem.GetCatalogItem(path);
+        var item = DirectoryItem.GetDirectoryItem(path);
 
         if (item == null)
         {

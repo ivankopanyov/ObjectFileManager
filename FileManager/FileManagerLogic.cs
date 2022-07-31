@@ -7,7 +7,7 @@ namespace FileManager;
 /// <summary>Класс, описывающий логику работы файлового менеджера.</summary>
 public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
 {
-    /// <summary>Навигатор по каталогам.</summary>
+    /// <summary>Навигатор по директориям.</summary>
     private readonly INavigator<string> _Navigator;
 
     /// <summary>Системные диски.</summary>
@@ -19,20 +19,20 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
     /// <summary>Текущая директория.</summary>
     public string CurrentDirectory => _Navigator.Current;
 
-    /// <summary>Элементы текущего каталога.</summary>
-    public CatalogItem[] ItemsList
+    /// <summary>Элементы текущей директории.</summary>
+    public DirectoryItem[] ItemsList
     {
         get 
         {
             try
             {
-                return CatalogItem.GetCatalogItems(_Navigator.Current);
+                return DirectoryItem.GetDirectoryItems(_Navigator.Current);
             }
             catch (Exception ex)
             {
                 if (MessageService is not null)
                     MessageService.ShowError(ex.Message);
-                return new CatalogItem[0];
+                return new DirectoryItem[0];
             }
         }
     }
@@ -40,17 +40,17 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
     /// <summary>Системные диски.</summary>
     public CIDrive[] Drives => _Drives;
 
-    /// <summary>Проверка налиция текущего каталога.</summary>
+    /// <summary>Проверка налиция текущей директории.</summary>
     public bool BackExists => _Navigator.BackExists;
 
-    /// <summary>Проверка наличия следущего каталога.</summary>
+    /// <summary>Проверка наличия следущей директории.</summary>
     public bool ForwardExists => _Navigator.ForwardExists;
 
-    /// <summary>Проверка наличия родительского каталога.</summary>
+    /// <summary>Проверка наличия родительской директории.</summary>
     public bool UpExists => _Navigator.UpExists;
 
     /// <summary>Инициализация объекта файлового менеджера.</summary>
-    /// <param name="navigator">Навигатор по каталогам.</param>
+    /// <param name="navigator">Навигатор по директориям.</param>
     /// <param name="messageService">Сервис вывода сообщений в пользотельский интерфейс.</param>
     /// <exception cref="ArgumentNullException">Навигатор не инициализирован.</exception>
     public FileManagerLogic(INavigator<string> navigator, IMessageService messageService)
@@ -112,13 +112,13 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         return _Navigator.Current;
     }
 
-    /// <summary>Переименование элемента каталога.</summary>
-    /// <param name="item">Элемент каталога для переименования.</param>
-    /// <param name="name">Новое имя элемента каталога.</param>
-    /// <exception cref="ArgumentNullException">Элемент каталога не инициализирован, 
+    /// <summary>Переименование элемента директории.</summary>
+    /// <param name="item">Элемент директории для переименования.</param>
+    /// <param name="name">Новое имя элемента директории.</param>
+    /// <exception cref="ArgumentNullException">Элемент директории не инициализирован, 
     /// или имя не инициализировано или пустое.</exception>
     /// <exception cref="InvalidOperationException">Не удалось переименовать элемент.</exception>
-    public void Rename(CatalogItem item, string name)
+    public void Rename(DirectoryItem item, string name)
     {
         if (item is null)
             throw new ArgumentNullException(nameof(item));
@@ -138,13 +138,13 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Изменение значения атрибута элемента каталога.</summary>
-    /// <param name="item">Элемент каталога.</param>
+    /// <summary>Изменение значения атрибута элемента директории.</summary>
+    /// <param name="item">Элемент директории.</param>
     /// <param name="attribute">Изменяемый атрибут.</param>
     /// <param name="value">Новое значение изменяемого атрибута.</param>
-    /// <exception cref="ArgumentNullException">Элемент каталога не инициализирован.</exception>
+    /// <exception cref="ArgumentNullException">Элемент директории не инициализирован.</exception>
     /// <exception cref="ArgumentException">Изенение указанного атрибута не поддерживается.</exception>
-    public void ChangeAttribute(CatalogItem item, FileAttributes attribute, bool value)
+    public void ChangeAttribute(DirectoryItem item, FileAttributes attribute, bool value)
     {
         if (item is null)
             throw new ArgumentNullException(nameof(item));
@@ -165,11 +165,11 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Вырезание элемента каталога в буфер обмена.</summary>
-    /// <param name="item">Элемент каталога.</param>
+    /// <summary>Вырезание элемента директории в буфер обмена.</summary>
+    /// <param name="item">Элемент директории.</param>
     /// <param name="clipboard">Буфер обмена.</param>
-    /// <exception cref="ArgumentNullException">Элемент каталога или буфер обмена не инициализирован.</exception>
-    public void Cut(CatalogItem item, IClipboard<string, string> clipboard)
+    /// <exception cref="ArgumentNullException">Элемент директории или буфер обмена не инициализирован.</exception>
+    public void Cut(DirectoryItem item, IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));
@@ -187,11 +187,11 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         item.Cut(clipboard);
     }
 
-    /// <summary>Копирование элемента каталога в буфер обмена.</summary>
-    /// <param name="item">Элемент каталога.</param>
+    /// <summary>Копирование элемента директории в буфер обмена.</summary>
+    /// <param name="item">Элемент директории.</param>
     /// <param name="clipboard">Буфер обмена.</param>
-    /// <exception cref="ArgumentNullException">Элемент каталога или буфер обмена не инициализирован.</exception>
-    public void Copy(CatalogItem item, IClipboard<string, string> clipboard)
+    /// <exception cref="ArgumentNullException">Элемент директории или буфер обмена не инициализирован.</exception>
+    public void Copy(DirectoryItem item, IClipboard<string, string> clipboard)
     {
         if (clipboard is null)
             throw new ArgumentNullException(nameof(clipboard));
@@ -209,7 +209,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         item.Copy(clipboard);
     }
 
-    /// <summary>Копирование элемента каталога.</summary>
+    /// <summary>Копирование элемента директории.</summary>
     /// <param name="source">Путь к копируемому элементу.</param>
     /// <param name="dest">Путь для копирования.</param>
     /// <exception cref="ArgumentNullException">Параметр не инициализирован или пустой.</exception>
@@ -249,7 +249,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
             else
             {
                 new DirectoryInfo(source).Copy(dest);
-                MessageService.ShowOk($"Папка {source} успешно скопирована!");
+                MessageService.ShowOk($"Директория {source} успешно скопирована!");
             }
         }
         catch
@@ -259,7 +259,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Перемещение элемента каталога.</summary>
+    /// <summary>Перемещение элемента директории.</summary>
     /// <param name="source">Путь к перемещаемому элементу.</param>
     /// <param name="dest">Путь для перемещения.</param>
     /// <exception cref="ArgumentNullException">Параметр не инициализирован или пустой.</exception>
@@ -299,7 +299,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
             else
             {
                 Directory.Move(source, dest);
-                MessageService.ShowOk($"Папка {source} успешно перемещена!");
+                MessageService.ShowOk($"Директория {source} успешно перемещена!");
             }
         }
         catch
@@ -309,9 +309,9 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Вставка элементов каталога из буфера обмена.</summary>
+    /// <summary>Вставка элементов директории из буфера обмена.</summary>
     /// <param name="clipboard">Буфер обмена.</param>
-    /// <param name="path">Путь каталога для вставки.</param>
+    /// <param name="path">Путь директории для вставки.</param>
     /// <exception cref="ArgumentNullException">Путь или буфер обмена не инициализирован.</exception>
     public void Paste(IClipboard<string, string> clipboard, string path)
     {
@@ -332,9 +332,9 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Удаление элемента каталога.</summary>
-    /// <param name="item">Удаляемый элемент каталога.</param>
-    public void Remove(CatalogItem item)
+    /// <summary>Удаление элемента директории.</summary>
+    /// <param name="item">Удаляемый элемент директории.</param>
+    public void Remove(DirectoryItem item)
     {
         if (MessageService is not null && !MessageService.ShowYesNo($"Вы уверены, что хотите удалить {item.Name}?"))
             return;
@@ -354,10 +354,10 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
             MessageService.ShowOk($"Файл {item.FullName} успешно удален!");
     }
 
-    /// <summary>Получение элемента каталога по пути.</summary>
-    /// <param name="path">Путь к элементу каталога.</param>
-    /// <returns>Элемент каталога.</returns>
-    public CatalogItem GetCatalogItem(string path)
+    /// <summary>Получение элемента директории по пути.</summary>
+    /// <param name="path">Путь к элементу директории.</param>
+    /// <returns>Элемент директории.</returns>
+    public DirectoryItem GetDirectoryItem(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -369,14 +369,14 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         if (!Path.IsPathRooted(path))
             path = Path.GetFullPath(Path.Combine(CurrentDirectory, path));
 
-        if (CatalogItem.GetItemType(path) == CatalogItemType.None)
+        if (DirectoryItem.GetItemType(path) == DirectoryItemType.None)
         {
             if (MessageService is not null)
                 MessageService.ShowError($"Файл {path} не найден!");
             return null!;
         }
 
-        return CatalogItem.GetCatalogItem(path);
+        return DirectoryItem.GetDirectoryItem(path);
     }
 
     /// <summary>Создание нового файла.</summary>
@@ -426,18 +426,18 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Создание нового каталога.</summary>
-    /// <param name="catalogName">Полное имя нового каталога, включающее путь к каталогу.</param>
+    /// <summary>Создание новой директории.</summary>
+    /// <param name="dirName">Полное имя новой директории, включающее путь к директории.</param>
     /// <exception cref="ArgumentNullException">Имя не инциализировано или пустое.</exception>
-    public void CreateCatalog(string catalogName)
+    public void CreateDirectory(string dirName)
     {
-        if (string.IsNullOrWhiteSpace(catalogName))
-            throw new ArgumentNullException(nameof(catalogName));
+        if (string.IsNullOrWhiteSpace(dirName))
+            throw new ArgumentNullException(nameof(dirName));
 
-        if (!Path.IsPathRooted(catalogName))
-            catalogName = Path.GetFullPath(Path.Combine(CurrentDirectory, catalogName));
+        if (!Path.IsPathRooted(dirName))
+            dirName = Path.GetFullPath(Path.Combine(CurrentDirectory, dirName));
 
-        var parent = Directory.GetParent(catalogName);
+        var parent = Directory.GetParent(dirName);
         if (parent is null || !parent.Exists)
         {
             if (MessageService is not null)
@@ -446,43 +446,43 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
             return;
         }
 
-        if (File.Exists(catalogName) || Directory.Exists(catalogName))
+        if (File.Exists(dirName) || Directory.Exists(dirName))
         {
-            var newName = catalogName;
+            var newName = dirName;
 
             for (int i = 2; File.Exists(newName) || Directory.Exists(newName); i++)
-                newName = $"{catalogName} ({i})";
+                newName = $"{dirName} ({i})";
 
-            catalogName = newName;
+            dirName = newName;
         }
 
         try
         {
-            Directory.CreateDirectory(catalogName);
+            Directory.CreateDirectory(dirName);
 
             if (MessageService is not null)
-                MessageService.ShowOk($"Папка {catalogName} успешно создана!!");
+                MessageService.ShowOk($"Директория {dirName} успешно создана!!");
         }
         catch
         {
             if (MessageService is not null)
-                MessageService.ShowError("Не удалось создать папку!");
+                MessageService.ShowError("Не удалось создать директорию!");
         }
     }
 
-    /// <summary>Поиск элементов в текущем каталоге.</summary>
+    /// <summary>Поиск элементов в текущей директории.</summary>
     /// <param name="filter">Фильтр для поиска.</param>
     /// <param name="allDirectories">Поиск по все поддиректориям.</param>
     /// <returns>Найденные элементы.</returns>
     /// <exception cref="ArgumentNullException">Фильтр для поиска не инициализирован или пустой.</exception>
-    public CatalogItem[] Find(string filter, bool allDirectories)
+    public DirectoryItem[] Find(string filter, bool allDirectories)
     {
         if (string.IsNullOrWhiteSpace(filter))
             throw new ArgumentNullException(nameof(filter));
 
         try
         {
-            return CatalogItem.FindCatalogItems(CurrentDirectory, filter, allDirectories);
+            return DirectoryItem.FindDirectoryItems(CurrentDirectory, filter, allDirectories);
         }
         catch (InvalidOperationException ex)
         {

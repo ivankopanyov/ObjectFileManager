@@ -37,8 +37,8 @@
                     <MenuItem Header="Создать">
                         <MenuItem Header="Файл"
                               Command="{Binding CreateFileCommand}"/>
-                        <MenuItem Header="Папку"
-                              Command="{Binding CreateCatalogCommand}"/>
+                        <MenuItem Header="Директорию"
+                              Command="{Binding CreateDirectoryCommand}"/>
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>

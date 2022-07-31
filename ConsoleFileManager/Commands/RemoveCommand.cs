@@ -13,12 +13,12 @@ public class RemoveCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:\folder_name\file_name",
-        @"..\folder_name"
+        @"C:\dir_name\file_name",
+        @"..\dir_name"
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Удаление файла или каталога.";
+    public override string Description => "Удаление файла или директории.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;
@@ -49,12 +49,12 @@ public class RemoveCommand : Command
 
         var path = string.Join(' ', args, 1, args.Length - 1).Trim('"', ' ');
 
-        if (CatalogItem.GetItemType(path) == CatalogItemType.None)
+        if (DirectoryItem.GetItemType(path) == DirectoryItemType.None)
         {
             _FileManager.MessageService.ShowError($"Файл не найден!");
             return;
         }
 
-        _FileManager.Remove(CatalogItem.GetCatalogItem(path));
+        _FileManager.Remove(DirectoryItem.GetDirectoryItem(path));
     }
 }

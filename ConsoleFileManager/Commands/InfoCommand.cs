@@ -14,8 +14,8 @@ public class InfoCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:folder_name\file_name",
-        @"..\folder_name"
+        @"C:dir_name\file_name",
+        @"..\dir_name"
     };
 
     /// <summary>Формат форматирования даты.</summary>
@@ -53,7 +53,7 @@ public class InfoCommand : Command
 
         var path = string.Join(' ', args, 1, args.Length - 1).Trim('"', ' ');
 
-        var item = CatalogItem.GetCatalogItem(path);
+        var item = DirectoryItem.GetDirectoryItem(path);
 
         if (item == null)
         {

@@ -111,7 +111,7 @@ public sealed class WindowsClipboard : IClipboard<string, string>
     }
 
     /// <summary>Вставка элементов из буфера обмена.</summary>
-    /// <param name="path">Путь к каталогу для вставки.</param>
+    /// <param name="path">Путь к директории для вставки.</param>
     /// <exception cref="ArgumentNullException">Путь не инициализирован или пустой.</exception>
     /// <exception cref="DirectoryNotFoundException">Путь не найден.</exception>
     /// <exception cref="InvalidOperationException">Не удалось скопировать файлы.</exception>
@@ -214,11 +214,11 @@ public sealed class WindowsClipboard : IClipboard<string, string>
         }
     }
 
-    /// <summary>Вставка каталога.</summary>
-    /// <param name="source">Вставляемый каталог.</param>
-    /// <param name="dest">Новый каталог.</param>
-    /// <param name="isMove">Перемещение каталога.</param>
-    /// <exception cref="InvalidOperationException">Не удалось вставить каталог.</exception>
+    /// <summary>Вставка директории.</summary>
+    /// <param name="source">Вставляемая директория.</param>
+    /// <param name="dest">Новая директория.</param>
+    /// <param name="isMove">Перемещение директории.</param>
+    /// <exception cref="InvalidOperationException">Не удалось вставить директорию.</exception>
     private void PasteDirectory(string source, string dest, bool isMove)
     {
         if (source == dest) return;
@@ -230,7 +230,7 @@ public sealed class WindowsClipboard : IClipboard<string, string>
         }
         catch
         {
-            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
+            throw new InvalidOperationException($"Не удалось скопировать директорию {source}");
         }
     }
 }

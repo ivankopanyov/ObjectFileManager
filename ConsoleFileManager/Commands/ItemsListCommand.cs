@@ -16,7 +16,7 @@ public class ItemsListCommand : Command
     private readonly string[] _Examples = new[] { string.Empty };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Список файлов и папок из текущей директории.";
+    public override string Description => "Список файлов и директорий из текущей директории.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;
@@ -46,7 +46,7 @@ public class ItemsListCommand : Command
 
         foreach (var item in items)
             stringBuilder
-                .Append(item.Type == CatalogItemType.Catalog ? " -d- " : " -f- ")
+                .Append(item.Type == DirectoryItemType.Directory ? " -d- " : " -f- ")
                 .AppendLine(item.Name);
 
         _FileManager.MessageService.ShowOk(stringBuilder.ToString());

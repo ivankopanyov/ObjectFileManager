@@ -1,7 +1,7 @@
 ﻿namespace FileManager.Content;
 
 /// <summary>Класс, описывающий файл.</summary>
-internal sealed class CIFile : CatalogItem
+internal sealed class CIFile : DirectoryItem
 {
     /// <summary>Файл, описываемый текущим классом.</summary>
     private readonly FileInfo _File;
@@ -53,7 +53,7 @@ internal sealed class CIFile : CatalogItem
     public override string FullName => _File.FullName;
 
     /// <summary>Тип. Всегда возвращает File.</summary>
-    public override CatalogItemType Type => CatalogItemType.File;
+    public override DirectoryItemType Type => DirectoryItemType.File;
 
     /// <summary>Тип, отображаемый в интерфейсе пользователя.</summary>
     public override string DisplayType => $"Файл \"{Exstension}\"";

@@ -12,13 +12,13 @@ public class CopyCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:\folder_name\file_name C:\folder_name\new_file_name",
-        "\"..\\folder name\" \"new folder name\"",
-        "C:\\folder_name\\file_name \"..\\folder name\\new_file_name\""
+        @"C:\dir_name\file_name C:\dir_name\new_file_name",
+        "\"..\\dir name\" \"new dir name\"",
+        "C:\\dir_name\\file_name \"..\\dir name\\new_file_name\""
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Копирование файла или каталога.";
+    public override string Description => "Копирование файла или директории.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;

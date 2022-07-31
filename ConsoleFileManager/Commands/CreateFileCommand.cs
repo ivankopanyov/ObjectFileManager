@@ -13,12 +13,12 @@ public class CreateFileCommand : Command
     /// <summary>Примеры использования команды.</summary>
     private readonly string[] _Examples = new[]
     {
-        @"C:\folder_name\new_file_name",
-        "\"..\\folder_name\\new file name\""
+        @"C:\dir_name\new_file_name",
+        "\"..\\dir_name\\new file name\""
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Создание новой директории.";
+    public override string Description => "Создание нового файла.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;

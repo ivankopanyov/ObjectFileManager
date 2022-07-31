@@ -28,11 +28,11 @@ public class MainViewModel : ViewModel
     /// <summary>Коллекция системных дисков.</summary>
     private ObservableCollection<CIDrive> _Drives;
 
-    /// <summary>Коллекция элементов текущего каталога.</summary>
-    private ObservableCollection<CatalogItem> _Items;
+    /// <summary>Коллекция элементов текущей директории.</summary>
+    private ObservableCollection<DirectoryItem> _Items;
 
-    /// <summary>Выбранный каталог</summary>
-    private CatalogItem _SelectedItem;
+    /// <summary>Выбранная директория</summary>
+    private DirectoryItem _SelectedItem;
 
     /// <summary>Фильтр для поиска.</summary>
     private string _FilterText;
@@ -58,15 +58,15 @@ public class MainViewModel : ViewModel
         set { _Drives = value; OnPropertyChanged(); }
     }
 
-    /// <summary>Коллекция элементов текущего каталога.</summary>
-    public ObservableCollection<CatalogItem> Items
+    /// <summary>Коллекция элементов текущей директории.</summary>
+    public ObservableCollection<DirectoryItem> Items
     {
         get => _Items;
         set { _Items = value; OnPropertyChanged(); }
     }
 
     /// <summary>Выбранный элемент.</summary>
-    public CatalogItem SelectedItem
+    public DirectoryItem SelectedItem
     {
         get => _SelectedItem;
         set
@@ -139,7 +139,7 @@ public class MainViewModel : ViewModel
         set => _FileManager.ChangeAttribute(SelectedItem, FileAttributes.Hidden, value);
     }
 
-    /// <summary>Отображение информации о выбранном каталоге.</summary>
+    /// <summary>Отображение информации о выбранной директории.</summary>
     public Visibility ShowInfo => SelectedItem is null ? Visibility.Hidden : Visibility.Visible;
 
     /// <summary>Команда перехода к предыдущей директории.</summary>
@@ -181,14 +181,14 @@ public class MainViewModel : ViewModel
         (obj) => SelectedItem is not null);
 
     /// <summary>Команда вставки элементов из буфера обмена операционной системы
-    /// в текущий или выбранный каталог.</summary>
+    /// в текущую или выбранную директорию.</summary>
     public ICommand PasteCommand => new Command((obj) =>
     {
         _FileManager.Paste(WindowsClipboard.Clipboard, SelectedItem is null ? _FileManager.CurrentDirectory : SelectedItem.FullName);
         Items = new(_FileManager.ItemsList);
     },
     (obj) => WindowsClipboard.Clipboard.ContainsData && (SelectedItem is null || 
-        (SelectedItem.Type == CatalogItemType.Catalog && SelectedItem.Exists)));
+        (SelectedItem.Type == DirectoryItemType.Directory && SelectedItem.Exists)));
 
     /// <summary>Команда удаления выбранного элемента.</summary>
     public ICommand RemoveCommand => new Command((obj) =>
@@ -198,17 +198,17 @@ public class MainViewModel : ViewModel
     },
     (obj) => SelectedItem is not null && !SelectedItem.ReadOnly);
 
-    /// <summary>Команда создания нового файла в текущем каталоге.</summary>
+    /// <summary>Команда создания нового файла в текущей директории.</summary>
     public ICommand CreateFileCommand => new Command((obj) =>
     {
         _FileManager.CreateFile(Path.Combine(_FileManager.CurrentDirectory, "Новый текстовый файл.txt"));
         Items = new(_FileManager.ItemsList);
     });
 
-    /// <summary>Команда создания подкаталога в текущем каталоге.</summary>
-    public ICommand CreateCatalogCommand => new Command((obj) =>
+    /// <summary>Команда создания сабдиректории в текущей директории.</summary>
+    public ICommand CreateDirectoryCommand => new Command((obj) =>
     {
-        _FileManager.CreateCatalog(Path.Combine(_FileManager.CurrentDirectory, "Новая папка"));
+        _FileManager.CreateDirectory(Path.Combine(_FileManager.CurrentDirectory, "Новая директория"));
         Items = new(_FileManager.ItemsList);
     });
 
@@ -225,8 +225,8 @@ public class MainViewModel : ViewModel
         Update(_FileManager.CurrentDirectory);
     }
 
-    /// <summary>Обновление заголовков и списка элементов текущего каталога.</summary>
-    /// <param name="path">Путь к текущему каталогу.</param>
+    /// <summary>Обновление заголовков и списка элементов текущей директории.</summary>
+    /// <param name="path">Путь к текущей директории.</param>
     private void Update(string path)
     {
         PathLine = path;
@@ -241,7 +241,7 @@ public class MainViewModel : ViewModel
         if (obj is null || obj.GetType() != typeof(string))
             return;
 
-        if (CatalogItem.GetItemType((string)obj) == CatalogItemType.File)
+        if (DirectoryItem.GetItemType((string)obj) == DirectoryItemType.File)
         {
             try
             {

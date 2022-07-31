@@ -57,8 +57,8 @@ public sealed class OSNavigator : INavigator<string>
     /// <summary>Очистка следущих директорий.</summary>
     public void ClearForward() => _Forward.Clear();
 
-    /// <summary>Переход в предыдущую диреторию.</summary>
-    /// <exception cref="InvalidOperationException">Не удалось перейти в предыдущую диреторию.</exception>
+    /// <summary>Переход в предыдущую директорию.</summary>
+    /// <exception cref="InvalidOperationException">Не удалось перейти в предыдущую директорию.</exception>
     /// <exception cref="DirectoryNotFoundException">Предыдущая директория не найдена.</exception>
     /// <exception cref="UnauthorizedAccessException">Нет доступа к предыдущей директории.</exception>
     public void GoToBack()
@@ -84,8 +84,8 @@ public sealed class OSNavigator : INavigator<string>
         _Back.Pop();
     }
 
-    /// <summary>Переход в следущую диреторию.</summary>
-    /// <exception cref="InvalidOperationException">Не удалось перейти в следущую диреторию.</exception>
+    /// <summary>Переход в следущую директорию.</summary>
+    /// <exception cref="InvalidOperationException">Не удалось перейти в следущую директорию.</exception>
     /// <exception cref="DirectoryNotFoundException">Следущая директория не найдена.</exception>
     /// <exception cref="UnauthorizedAccessException">Нет доступа к следущей директории.</exception>
     public void GoToForward()
@@ -111,7 +111,7 @@ public sealed class OSNavigator : INavigator<string>
         _Forward.Pop();
     }
 
-    /// <summary>Переход в родительскую диреторию.</summary>
+    /// <summary>Переход в родительскую директорию.</summary>
     /// <exception cref="InvalidOperationException">Текущая директория является корневой.</exception>
     /// <exception cref="DirectoryNotFoundException">Директория не найдена.</exception>
     /// <exception cref="UnauthorizedAccessException">Нет доступа к директории.</exception>
