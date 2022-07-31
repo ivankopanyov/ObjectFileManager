@@ -36,6 +36,7 @@ public class ConsoleFileManagerLogic
 
         _FileManager = new FileManagerLogic(navigator, messageService);
 
+        var drivesCommand = new DrivesCommand(_FileManager);
         var changeDirectoryCommand = new ChangeDirectoryCommand(_FileManager);
         var itemsListCommand = new ItemsListCommand(_FileManager);
         var createFileCommand = new CreateFileCommand(_FileManager);
@@ -50,6 +51,7 @@ public class ConsoleFileManagerLogic
 
         Commands = new Dictionary<string, Command>
         {
+            { "drives", drivesCommand },
             { "cd", changeDirectoryCommand },
             { "ls", itemsListCommand },
             { "file", createFileCommand },

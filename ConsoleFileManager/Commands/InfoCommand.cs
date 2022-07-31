@@ -18,7 +18,7 @@ public class InfoCommand : Command
         @"..\dir_name"
     };
 
-    /// <summary>Формат форматирования даты.</summary>
+    /// <summary>Культура формата.</summary>
     private readonly CultureInfo _Ru = CultureInfo.CreateSpecificCulture("ru-RU");
 
     /// <summary>Описание команды.</summary>
@@ -61,7 +61,7 @@ public class InfoCommand : Command
             return;
         }
 
-        var result = $"{item.Name}\r\n\tПуть: {item.FullName}\r\n\tТип: {item.DisplayType}\r\n\tРазмер: {item.ComputedSize} KB\r\n\tДата создания: {item.CreateDate.ToString(_Ru)}\r\n\tДата изменения: {item.UpdateDate.ToString(_Ru)}\r\n\tТолько для чтения: {item.ReadOnly}\r\n\tСкрытый: {item.ReadOnly}";
+        var result = $"{item.Name}\r\n\tПуть: {item.FullName}\r\n\tТип: {item.DisplayType}\r\n\tРазмер: {(item.ComputedSize ?? 0).ToString("N0", _Ru)} KB\r\n\tДата создания: {item.CreateDate.ToString(_Ru)}\r\n\tДата изменения: {item.UpdateDate.ToString(_Ru)}\r\n\tТолько для чтения: {item.ReadOnly}\r\n\tСкрытый: {item.ReadOnly}";
 
         _FileManager.MessageService.ShowOk(result);
     }

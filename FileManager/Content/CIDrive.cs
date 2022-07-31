@@ -10,13 +10,13 @@ public class CIDrive
     public string Name => _Drive.Name;
     
     /// <summary>Размер системного диска.</summary>
-    public long TotalSize => _Drive.IsReady ? _Drive.TotalSize : 1;
+    public long? TotalSize => _Drive.IsReady ? _Drive.TotalSize / 1000 : null;
 
     /// <summary>Занятое пространство на системном диске.</summary>
-    public long FillSize => _Drive.IsReady ? _Drive.TotalSize - _Drive.TotalFreeSpace : 0;
+    public long? FillSize => _Drive.IsReady ? (_Drive.TotalSize - _Drive.TotalFreeSpace) / 1000 : null;
 
     /// <summary>Свободное пространство на системном диске.</summary>
-    public long FreeSize => _Drive.IsReady ? _Drive.TotalFreeSpace : 0;
+    public long? FreeSize => _Drive.IsReady ? _Drive.TotalFreeSpace / 1000 : null;
 
     /// <summary>Инициализация объекта системного диска.</summary>
     /// <param name="drive">Системный диск, описываемый текущим классом.</param>
