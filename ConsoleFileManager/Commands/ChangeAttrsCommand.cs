@@ -10,15 +10,18 @@ public class ChangeAttrsCommand : Command
     /// <summary>Объект логики файлового менеджера.</summary>
     private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[]
+    {
+        @"hidden=true C:\folder_name\file_name",
+        @"readonly=false hidden=true ..\folder_name"
+    };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Изменение атрибутов файла или каталога.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[]
-    { 
-        @"hidden=true C:\FileName",
-        @"readonly=false hidden=true FolderName"
-    };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды изменения значения атрибута файла или директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
@@ -59,7 +62,7 @@ public class ChangeAttrsCommand : Command
             }
             else
             {
-                path = string.Join(' ', args, i, args.Length - i);
+                path = string.Join(' ', args, i, args.Length - i).Trim('"', ' ');
                 break;
             }
         }

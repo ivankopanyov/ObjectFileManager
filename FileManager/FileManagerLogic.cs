@@ -241,17 +241,71 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         try
         {
             if (File.Exists(source))
+            {
                 File.Copy(source, dest);
+                MessageService.ShowOk($"Файл {source} успешно скопирован!");
+            }
             else
+            {
                 CatalogItem.CopyDirectory(source, dest);
+                MessageService.ShowOk($"Папка {source} успешно скопирована!");
+            }
         }
         catch
         {
             MessageService.ShowError($"Не удалось скопировать файл {source}");
             return;
         }
+    }
 
-        MessageService.ShowOk($"Файл {source} успешно скопирован");
+    /// <summary>Перемещение элемента каталога.</summary>
+    /// <param name="source">Путь к перемещаемому элементу.</param>
+    /// <param name="dest">Путь для перемещения.</param>
+    /// <exception cref="ArgumentNullException">Параметр не инициализирован или пустой.</exception>
+    public void Move(string source, string dest)
+    {
+        if (source is null)
+            throw new ArgumentNullException(nameof(source));
+
+        if (dest is null)
+            throw new ArgumentNullException(nameof(dest));
+
+        if (!Path.IsPathRooted(source))
+            source = Path.GetFullPath(Path.Combine(CurrentDirectory, source));
+
+        if (!Path.IsPathRooted(dest))
+            dest = Path.GetFullPath(Path.Combine(CurrentDirectory, dest));
+
+        if (!File.Exists(source) && !Directory.Exists(source))
+        {
+            MessageService.ShowError($"Файл {source} не найден!");
+            return;
+        }
+
+        if (File.Exists(dest) || Directory.Exists(dest))
+        {
+            MessageService.ShowError($"Файл {dest} уже существует!");
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(source))
+            {
+                File.Move(source, dest);
+                MessageService.ShowOk($"Файл {source} успешно перемещен!");
+            }
+            else
+            {
+                Directory.Move(source, dest);
+                MessageService.ShowOk($"Папка {source} успешно перемещена!");
+            }
+        }
+        catch
+        {
+            MessageService.ShowError($"Не удалось переместить файл {source}");
+            return;
+        }
     }
 
     /// <summary>Вставка элементов каталога из буфера обмена.</summary>

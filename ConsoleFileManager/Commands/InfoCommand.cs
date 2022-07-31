@@ -11,6 +11,13 @@ public class InfoCommand : Command
     /// <summary>Объект логики файлового менеджера.</summary>
     private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[]
+    {
+        @"C:folder_name\file_name",
+        @"..\folder_name"
+    };
+
     /// <summary>Формат форматирования даты.</summary>
     private readonly CultureInfo _Ru = CultureInfo.CreateSpecificCulture("ru-RU");
 
@@ -18,11 +25,7 @@ public class InfoCommand : Command
     public override string Description => "Информация о файле или директории.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[]
-    {
-        @"C:\FolderName\FileName",
-        @"..\FolderName"
-    };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды вывода информации о файле или директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
@@ -48,7 +51,7 @@ public class InfoCommand : Command
             return;
         }
 
-        var path = string.Join(' ', args, 1, args.Length - 1).Trim();
+        var path = string.Join(' ', args, 1, args.Length - 1).Trim('"', ' ');
 
         var item = CatalogItem.GetCatalogItem(path);
 

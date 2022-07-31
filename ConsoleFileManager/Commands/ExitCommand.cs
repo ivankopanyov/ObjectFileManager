@@ -10,11 +10,14 @@ public class ExitCommand : Command
     /// <summary>Объект логики консольного файлового менеджера.</summary>
     private readonly ConsoleFileManagerLogic _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[] { string.Empty };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Выход из приложения.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[] { string.Empty };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды выхода из приложения.</summary>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>

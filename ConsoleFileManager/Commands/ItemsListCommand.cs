@@ -12,11 +12,14 @@ public class ItemsListCommand : Command
     /// <summary>Объект логики файлового менеджера.</summary>
     private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[] { string.Empty };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Список файлов и папок из текущей директории.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[] { string.Empty };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды вывода списка файлов
     /// и сабдиректорий текущей директории.</summary>

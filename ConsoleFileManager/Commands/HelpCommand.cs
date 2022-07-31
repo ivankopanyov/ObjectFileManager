@@ -9,16 +9,18 @@ public class HelpCommand : Command
     /// <summary>Объект логики консольного файлового менеджера.</summary>
     private readonly ConsoleFileManagerLogic _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[]
+    {
+        string.Empty,
+        "command_name"
+    };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Список команд с описанием или описание команды с примерами использования.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[] 
-    { 
-        string.Empty,
-        "CommandName"
-    };
-
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды вывода информации о командах приложения.</summary>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
@@ -42,7 +44,7 @@ public class HelpCommand : Command
             var commandName = string.Join(' ', args, 1, args.Length - 1).ToLower().Trim();
             if (!string.IsNullOrWhiteSpace(commandName) && _FileManager.Commands.TryGetValue(commandName, out var command))
             {
-                stringBuilder.AppendLine($"{args[0]} - {command.Description}\r\n\r\nПримеры использования:\r\n");
+                stringBuilder.AppendLine($"{commandName} - {command.Description}\r\n\r\nПримеры использования:\r\n");
 
                 foreach (var example in command.Examples) 
                     stringBuilder.AppendLine($"{commandName} {example}");

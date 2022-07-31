@@ -38,6 +38,8 @@ public class ConsoleFileManagerLogic
 
         var changeDirectoryCommand = new ChangeDirectoryCommand(_FileManager);
         var itemsListCommand = new ItemsListCommand(_FileManager);
+        var copyCommand = new CopyCommand(_FileManager);
+        var moveCommand = new MoveCommand(_FileManager);
         var changeAttrsCommand = new ChangeAttrsCommand(_FileManager);
         var removeCommand = new RemoveCommand(_FileManager);
         var infoCommand = new InfoCommand(_FileManager);
@@ -48,7 +50,9 @@ public class ConsoleFileManagerLogic
         {
             { "cd", changeDirectoryCommand },
             { "ls", itemsListCommand },
-            { "ca", changeAttrsCommand },
+            { "copy", copyCommand },
+            { "move", moveCommand },
+            { "attr", changeAttrsCommand },
             { "rm", removeCommand },
             { "info", infoCommand },
             { "help", helpCommand},

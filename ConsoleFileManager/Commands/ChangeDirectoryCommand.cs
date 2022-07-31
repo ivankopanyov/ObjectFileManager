@@ -9,15 +9,18 @@ public class ChangeDirectoryCommand : Command
     /// <summary>Объект логики файлового менеджера.</summary>
     private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[]
+    {
+        @"C:\folder_name\file_name",
+        @"..\folder_name"
+    };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Изменение текущей директории.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[]
-    {
-        @"C:\FolderName\FolderName",
-        @"..\FolderName"
-    };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды изменения текущей директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
@@ -43,6 +46,6 @@ public class ChangeDirectoryCommand : Command
             return;
         }
 
-        _FileManager.ChangeDirectory(string.Join(' ', args, 1, args.Length - 1).Trim());
+        _FileManager.ChangeDirectory(string.Join(' ', args, 1, args.Length - 1).Trim('"', ' '));
     }
 }

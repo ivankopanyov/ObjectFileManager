@@ -10,15 +10,18 @@ public class RemoveCommand : Command
     /// <summary>Объект логики файлового менеджера.</summary>
     private readonly IConsoleFileManager _FileManager;
 
+    /// <summary>Примеры использования команды.</summary>
+    private readonly string[] _Examples = new[]
+    {
+        @"C:\folder_name\file_name",
+        @"..\folder_name"
+    };
+
     /// <summary>Описание команды.</summary>
     public override string Description => "Удаление файла или каталога.";
 
     /// <summary>Примеры использования команды.</summary>
-    public override string[] Examples => new[]
-    {
-        @"C:\FolderName\FolderName",
-        @"..\FolderName"
-    };
+    public override string[] Examples => _Examples;
 
     /// <summary>Инициализация объекта команды удаления файла или директории..</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
@@ -44,7 +47,7 @@ public class RemoveCommand : Command
             return;
         }
 
-        var path = string.Join(' ', args, 1, args.Length - 1).Trim();
+        var path = string.Join(' ', args, 1, args.Length - 1).Trim('"', ' ');
 
         if (CatalogItem.GetItemType(path) == CatalogItemType.None)
         {

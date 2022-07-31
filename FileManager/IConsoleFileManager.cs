@@ -24,6 +24,11 @@ public interface IConsoleFileManager
     /// <param name="dest">Путь для копирования.</param>
     void Copy(string source, string dest);
 
+    /// <summary>Перемещение элемента каталога.</summary>
+    /// <param name="source">Путь к перемещаемому элементу.</param>
+    /// <param name="dest">Путь для перемещения.</param>
+    void Move(string source, string dest);
+
     /// <summary>Удаление элемента каталога.</summary>
     /// <param name="item">Удаляемый элемент каталога.</param>
     void Remove(CatalogItem item);
