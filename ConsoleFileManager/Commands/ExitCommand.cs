@@ -13,6 +13,9 @@ public class ExitCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Выход из приложения.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[] { string.Empty };
+
     /// <summary>Инициализация объекта команды выхода из приложения.</summary>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>

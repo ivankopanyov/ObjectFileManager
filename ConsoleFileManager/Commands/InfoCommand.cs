@@ -17,6 +17,13 @@ public class InfoCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Информация о файле или директории.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[]
+    {
+        @"C:\FolderName\FileName",
+        @"..\FolderName"
+    };
+
     /// <summary>Инициализация объекта команды вывода информации о файле или директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>

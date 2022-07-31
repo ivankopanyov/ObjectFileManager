@@ -10,7 +10,15 @@ public class HelpCommand : Command
     private readonly ConsoleFileManagerLogic _FileManager;
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Список команд с описанием.";
+    public override string Description => "Список команд с описанием или описание команды с примерами использования.";
+
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[] 
+    { 
+        string.Empty,
+        "CommandName"
+    };
+
 
     /// <summary>Инициализация объекта команды вывода информации о командах приложения.</summary>
     /// <param name="fileManager">Объект логики консольного файлового менеджера.</param>
@@ -27,9 +35,25 @@ public class HelpCommand : Command
     /// <param name="args">Значения параметров команды.</param>
     public override void Execute(params string[] args)
     {
-        if (_FileManager.Commands is null || _FileManager.Commands.Count == 0) return;
-
         var stringBuilder = new StringBuilder();
+
+        if (args is not null && args.Length > 1)
+        {
+            var commandName = string.Join(' ', args, 1, args.Length - 1).ToLower().Trim();
+            if (!string.IsNullOrWhiteSpace(commandName) && _FileManager.Commands.TryGetValue(commandName, out var command))
+            {
+                stringBuilder.AppendLine($"{args[0]} - {command.Description}\r\n\r\nПримеры использования:\r\n");
+
+                foreach (var example in command.Examples) 
+                    stringBuilder.AppendLine($"{commandName} {example}");
+
+                _FileManager.MessageService.ShowOk(stringBuilder.ToString());
+
+                return;
+            }
+        }
+
+        if (_FileManager.Commands is null || _FileManager.Commands.Count == 0) return;
 
         foreach (var command in _FileManager.Commands)
         {

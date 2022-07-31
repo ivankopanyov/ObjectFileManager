@@ -12,6 +12,13 @@ public class ChangeDirectoryCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Изменение текущей директории.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[]
+    {
+        @"C:\FolderName\FolderName",
+        @"..\FolderName"
+    };
+
     /// <summary>Инициализация объекта команды изменения текущей директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>

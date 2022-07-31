@@ -13,6 +13,13 @@ public class ChangeAttrsCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Изменение атрибутов файла или каталога.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[]
+    { 
+        @"hidden=true C:\FileName",
+        @"readonly=false hidden=true FolderName"
+    };
+
     /// <summary>Инициализация объекта команды изменения значения атрибута файла или директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>

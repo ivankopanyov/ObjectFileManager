@@ -15,6 +15,9 @@ public class ItemsListCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Список файлов и папок из текущей директории.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[] { string.Empty };
+
     /// <summary>Инициализация объекта команды вывода списка файлов
     /// и сабдиректорий текущей директории.</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>

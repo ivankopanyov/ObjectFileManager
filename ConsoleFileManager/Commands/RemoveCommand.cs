@@ -13,6 +13,13 @@ public class RemoveCommand : Command
     /// <summary>Описание команды.</summary>
     public override string Description => "Удаление файла или каталога.";
 
+    /// <summary>Примеры использования команды.</summary>
+    public override string[] Examples => new[]
+    {
+        @"C:\FolderName\FolderName",
+        @"..\FolderName"
+    };
+
     /// <summary>Инициализация объекта команды удаления файла или директории..</summary>
     /// <param name="fileManager">Объект логики файлового менеджера.</param>
     /// <exception cref="ArgumentNullException">Объект файлового менеджера не инициализирован.</exception>
