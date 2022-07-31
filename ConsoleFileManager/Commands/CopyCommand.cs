@@ -18,7 +18,7 @@ public class CopyCommand : Command
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Изменение атрибутов файла или каталога.";
+    public override string Description => "Копирование файла или каталога.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;

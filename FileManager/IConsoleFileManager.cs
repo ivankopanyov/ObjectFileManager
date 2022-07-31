@@ -32,4 +32,12 @@ public interface IConsoleFileManager
     /// <summary>Удаление элемента каталога.</summary>
     /// <param name="item">Удаляемый элемент каталога.</param>
     void Remove(CatalogItem item);
+
+    /// <summary>Создание нового файла.</summary>
+    /// <param name="fileName">Имя нового файла.</param>
+    void CreateFile(string fileName);
+
+    /// <summary>Создание нового каталога.</summary>
+    /// <param name="catalogName">Имя нового каталога.</param>
+    void CreateCatalog(string catalogName);
 }

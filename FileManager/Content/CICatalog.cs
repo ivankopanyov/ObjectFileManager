@@ -44,10 +44,10 @@ internal sealed class CICatalog : CatalogItem
         }
     }
 
-    /// <summary>Имя каталога без разрешения. Совпадает с именем каталога.</summary>
+    /// <summary>Имя каталога без расширения. Совпадает с именем каталога.</summary>
     public override string NameWithoutExtension => Name;
 
-    /// <summary>Разрешение каталога. Всегда возвращает null.</summary>
+    /// <summary>Расширение каталога. Всегда возвращает null.</summary>
     public override string Exstension => null!;
 
     /// <summary>Полное имя каталога, включающее путь к каталогу.</summary>

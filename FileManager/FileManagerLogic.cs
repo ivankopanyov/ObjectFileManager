@@ -1,5 +1,6 @@
 ﻿using FileManager.Content;
 using FileManager.Services;
+using FileManager.Extension;
 
 namespace FileManager;
 
@@ -247,7 +248,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
             }
             else
             {
-                CatalogItem.CopyDirectory(source, dest);
+                new DirectoryInfo(source).Copy(dest);
                 MessageService.ShowOk($"Папка {source} успешно скопирована!");
             }
         }
@@ -378,31 +379,94 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         return CatalogItem.GetCatalogItem(path);
     }
 
-    /// <summary>Создание нового файла в текущем каталоге.</summary>
-    public void CreateFile()
+    /// <summary>Создание нового файла.</summary>
+    /// <param name="fileName">Полное имя нового файла, включающее путь к файлу.</param>
+    /// <exception cref="ArgumentNullException">Имя не инциализировано или пустое.</exception>
+    public void CreateFile(string fileName)
     {
-        try
-        {
-            CatalogItem.CreateFile(_Navigator.Current);
-        }
-        catch (InvalidOperationException ex)
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentNullException(nameof(fileName));
+
+        if (!Path.IsPathRooted(fileName))
+            fileName = Path.GetFullPath(Path.Combine(CurrentDirectory, fileName));
+
+        var parent = Directory.GetParent(fileName);
+        if (parent is null || !parent.Exists)
         {
             if (MessageService is not null)
-                MessageService.ShowError(ex.Message);
+                MessageService.ShowError("Директория файла не найдена.");
+
+            return;
+        }
+
+        if (File.Exists(fileName) || Directory.Exists(fileName))
+        {
+            var name = Path.GetFileNameWithoutExtension(fileName);
+            var exstansion = Path.GetExtension(fileName);
+
+            var newName = name;
+
+            for (int i = 2; File.Exists($"{newName}{exstansion}") || Directory.Exists($"{newName}{exstansion}"); i++)
+                newName = $"{name} ({i})";
+
+            fileName = $"{newName}{exstansion}";
+        }
+
+        try
+        {
+            File.Create(fileName);
+
+            if (MessageService is not null)
+                MessageService.ShowOk($"Файл {fileName} успешно создан!");
+        }
+        catch
+        {
+            if (MessageService is not null)
+                MessageService.ShowError("Не удалось создать файл!");
         }
     }
 
-    /// <summary>Создание подкаталога в текущем каталоге.</summary>
-    public void CreateCatalog()
+    /// <summary>Создание нового каталога.</summary>
+    /// <param name="catalogName">Полное имя нового каталога, включающее путь к каталогу.</param>
+    /// <exception cref="ArgumentNullException">Имя не инциализировано или пустое.</exception>
+    public void CreateCatalog(string catalogName)
     {
-        try
-        {
-            CatalogItem.CreateCatalog(_Navigator.Current);
-        }
-        catch (InvalidOperationException ex)
+        if (string.IsNullOrWhiteSpace(catalogName))
+            throw new ArgumentNullException(nameof(catalogName));
+
+        if (!Path.IsPathRooted(catalogName))
+            catalogName = Path.GetFullPath(Path.Combine(CurrentDirectory, catalogName));
+
+        var parent = Directory.GetParent(catalogName);
+        if (parent is null || !parent.Exists)
         {
             if (MessageService is not null)
-                MessageService.ShowError(ex.Message);
+                MessageService.ShowError("Родительская директория не найдена.");
+
+            return;
+        }
+
+        if (File.Exists(catalogName) || Directory.Exists(catalogName))
+        {
+            var newName = catalogName;
+
+            for (int i = 2; File.Exists(newName) || Directory.Exists(newName); i++)
+                newName = $"{catalogName} ({i})";
+
+            catalogName = newName;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(catalogName);
+
+            if (MessageService is not null)
+                MessageService.ShowOk($"Папка {catalogName} успешно создана!!");
+        }
+        catch
+        {
+            if (MessageService is not null)
+                MessageService.ShowError("Не удалось создать папку!");
         }
     }
 

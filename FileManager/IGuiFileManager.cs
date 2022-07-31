@@ -73,11 +73,13 @@ public interface IGuiFileManager
     /// <returns>Элемент каталога.</returns>
     CatalogItem GetCatalogItem(string path);
 
-    /// <summary>Создание нового файла в текущем каталоге.</summary>
-    void CreateFile();
+    /// <summary>Создание нового файла.</summary>
+    /// <param name="fileName">Имя нового файла.</param>
+    void CreateFile(string fileName);
 
-    /// <summary>Создание подкаталога в текущем каталоге.</summary>
-    void CreateCatalog();
+    /// <summary>Создание нового каталога.</summary>
+    /// <param name="catalogName">Полное имя нового каталога, включающее путь к каталогу.</param>
+    void CreateCatalog(string catalogName);
 
     /// <summary>Поиск элементов в текущем каталоге.</summary>
     /// <param name="filter">Фильтр для поиска.</param>

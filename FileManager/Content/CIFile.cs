@@ -43,10 +43,10 @@ internal sealed class CIFile : CatalogItem
         }
     }
 
-    /// <summary>Имя файла без разрешения.</summary>
+    /// <summary>Имя файла без расширения.</summary>
     public override string NameWithoutExtension => Path.GetFileNameWithoutExtension(_File.Name);
 
-    /// <summary>Разрешение файла.</summary>
+    /// <summary>Расширение файла.</summary>
     public override string Exstension => _File.Extension.TrimStart('.').ToUpper();
 
     /// <summary>Полное имя файла, включающее путь к файлу.</summary>

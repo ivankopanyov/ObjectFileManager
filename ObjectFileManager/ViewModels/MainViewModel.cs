@@ -201,14 +201,14 @@ public class MainViewModel : ViewModel
     /// <summary>Команда создания нового файла в текущем каталоге.</summary>
     public ICommand CreateFileCommand => new Command((obj) =>
     {
-        _FileManager.CreateFile();
+        _FileManager.CreateFile(Path.Combine(_FileManager.CurrentDirectory, "Новый текстовый файл.txt"));
         Items = new(_FileManager.ItemsList);
     });
 
     /// <summary>Команда создания подкаталога в текущем каталоге.</summary>
     public ICommand CreateCatalogCommand => new Command((obj) =>
     {
-        _FileManager.CreateCatalog();
+        _FileManager.CreateCatalog(Path.Combine(_FileManager.CurrentDirectory, "Новая папка"));
         Items = new(_FileManager.ItemsList);
     });
 

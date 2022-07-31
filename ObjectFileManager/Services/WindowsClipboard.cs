@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
-using FileManager.Content;
+using FileManager.Extension;
 using FileManager.Services;
 
 namespace ObjectFileManager.Services;
@@ -226,7 +226,7 @@ public sealed class WindowsClipboard : IClipboard<string, string>
         try
         {
             if (isMove) Directory.Move(source, dest);
-            else CatalogItem.CopyDirectory(source, dest);
+            else new DirectoryInfo(source).Copy(dest);
         }
         catch
         {

@@ -11,10 +11,10 @@ public abstract class CatalogItem
     /// <summary>Имя элемента каталога.</summary>
     public abstract string Name { get; set; }
 
-    /// <summary>Имя элемента каталога без разрешения.</summary>
+    /// <summary>Имя элемента каталога без расширения.</summary>
     public abstract string NameWithoutExtension { get; }
 
-    /// <summary>Разрешение элемента каталога.</summary>
+    /// <summary>Расширение элемента каталога.</summary>
     public abstract string Exstension { get; }
 
     /// <summary>Полное имя, включающее путь к элементу каталога.</summary>
@@ -249,97 +249,6 @@ public abstract class CatalogItem
         catch
         {
             throw new InvalidOperationException("Поиск по каталогу не доступен!");
-        }
-    }
-
-    /// <summary>Создание нового файла.</summary>
-    /// <param name="path">Путь к каталогу, в котором будет создан файл.</param>
-    /// <exception cref="ArgumentNullException">Путь к каталогу не инциализирован или пустой.</exception>
-    /// <exception cref="DirectoryNotFoundException">Каталог не найден.</exception>
-    /// <exception cref="InvalidOperationException">Не удалось создать файл.</exception>
-    public static void CreateFile(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-            throw new ArgumentNullException(nameof(path));
-
-        if (!Directory.Exists(path))
-            throw new DirectoryNotFoundException($"Директория {path} не найдена!");
-
-        var name = "Новый текстовый файл";
-        var exstansion = ".txt";
-        var newName = name;
-
-        for (int i = 2; File.Exists(Path.Combine(path, $"{newName}{exstansion}")); i++)
-            newName = $"{name} ({i})";
-
-        try
-        {
-            File.Create(Path.Combine(path, $"{newName}{exstansion}"));
-        }
-        catch
-        {
-            throw new InvalidOperationException("Не удалось создать файл!");
-        }
-    }
-
-    /// <summary>Создание нового каталога.</summary>
-    /// <param name="path">Путь к каталогу, в котором будет создан новый каталог.</param>
-    /// <exception cref="ArgumentNullException">Путь к каталогу не инциализирован или пустой.</exception>
-    /// <exception cref="DirectoryNotFoundException">Каталог не найден.</exception>
-    /// <exception cref="InvalidOperationException">Не удалось создать новый каталог.</exception>
-    public static void CreateCatalog(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-            throw new ArgumentNullException(nameof(path));
-
-        if (!Directory.Exists(path))
-            throw new DirectoryNotFoundException($"Директория {path} не найдена!");
-
-        var name = "Новая папка";
-        var newName = name;
-
-        for (int i = 2; Directory.Exists(Path.Combine(path, newName)); i++)
-            newName = $"{name} ({i})";
-
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(path, newName));
-        }
-        catch
-        {
-            throw new InvalidOperationException("Не удалось создать папку!");
-        }
-    }
-
-    /// <summary>Копирование директории.</summary>
-    /// <param name="source">Директория для копирования.</param>
-    /// <param name="dest">новая диретория.</param>
-    /// <exception cref="InvalidOperationException">Не удалось скопировать директорию.</exception>
-    public static void CopyDirectory(string source, string dest)
-    {
-        try
-        {
-            var directory = new DirectoryInfo(source);
-
-            DirectoryInfo[] directories = directory.GetDirectories();
-
-            Directory.CreateDirectory(dest);
-
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                string path = Path.Combine(dest, file.Name);
-                file.CopyTo(path);
-            }
-
-            foreach (DirectoryInfo dir in directories)
-            {
-                string path = Path.Combine(dest, dir.Name);
-                CopyDirectory(dir.FullName, path);
-            }
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Не удалось скопировать папку {source}");
         }
     }
 }

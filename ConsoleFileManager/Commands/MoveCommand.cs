@@ -18,7 +18,7 @@ public class MoveCommand : Command
     };
 
     /// <summary>Описание команды.</summary>
-    public override string Description => "Изменение атрибутов файла или каталога.";
+    public override string Description => "Перемещение файла или каталога.";
 
     /// <summary>Примеры использования команды.</summary>
     public override string[] Examples => _Examples;
