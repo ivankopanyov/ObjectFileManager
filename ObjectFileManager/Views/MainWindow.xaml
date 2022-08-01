@@ -1,0 +1,295 @@
+﻿<Window x:Class="ObjectFileManager.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:ObjectFileManager.ViewModels"
+        d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="450" Width="800"
+        MinHeight="200" MinWidth="350">
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBlock}" x:Key="RightCell">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="Padding" Value="5,0,5,0"/>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}" x:Key="PaddingCell">
+            <Setter Property="Padding" Value="5,0,5,0"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Menu Grid.Column="0" 
+                Background="White"
+              Margin="0,5,0,0"
+              Height="20">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Открыть"
+                          Command="{Binding OpenCommand}"
+                          CommandParameter="{Binding SelectedItem.FullName}"/>
+                    <MenuItem Header="Создать">
+                        <MenuItem Header="Файл"
+                              Command="{Binding CreateFileCommand}"/>
+                        <MenuItem Header="Директорию"
+                              Command="{Binding CreateDirectoryCommand}"/>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Правка">
+                    <MenuItem Header="Вырезать"
+                          Command="{Binding CutCommand}"/>
+                    <MenuItem Header="Копировать"
+                          Command="{Binding CopyCommand}"/>
+                    <MenuItem Header="Вставить"
+                          Command="{Binding PasteCommand}"/>
+                    <Separator />
+                    <MenuItem Header="Удалить"
+                          Command="{Binding RemoveCommand}"/>
+                </MenuItem>
+            </Menu>
+            <TextBlock Text="Поиск: "
+                       Grid.Column="1"
+                       Margin="5,0,0,3"
+                       VerticalAlignment="Bottom"/>
+            <TextBox Text = "{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Column="2"
+                     Margin="5,5,5,0"
+                     VerticalAlignment="Top" 
+                     TextWrapping="NoWrap"
+                     Height="20" />
+        </Grid>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="Элементов: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Items.Count}"/>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Height="25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="←"
+                        Grid.Column="0"
+                    Margin="5,5,0,0"
+                    Width="20"
+                    Command="{Binding ToBackCommand}"/>
+                <Button Content="→"
+                        Grid.Column="1"
+                    Margin="5,5,0,0"
+                    Width="20"
+                    Command="{Binding ToForwardCommand}"/>
+                <Button Content="↑"
+                        Grid.Column="2"
+                    Margin="5,5,0,0"
+                    Width="20"
+                    Command="{Binding ToUpCommand}"/>
+                <TextBox Text="{Binding PathLine}"
+                         Grid.Column="3"
+                     Margin="5,5,0,0"
+                     TextWrapping="NoWrap"/>
+                <Button Content="→"
+                        Grid.Column="4"
+                    Margin="5,5,5,0"
+                    Width="20"
+                    Command="{Binding ToPathCommand}"
+                    CommandParameter="{Binding PathLine}"/>
+            </Grid>
+            <Grid Grid.Row="1" Margin="5,5,5,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="100"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="5*" MinWidth="100"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="3*" MinWidth="100"/>
+                </Grid.ColumnDefinitions>
+                <ListBox Grid.Column="0"
+                         HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding Drives}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="25">
+                                <Grid.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick"
+                                                  Command="{Binding DataContext.ToPathCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                                                  CommandParameter="{Binding SelectedItem.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+                                </Grid.InputBindings>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Name}"
+                                           Grid.Row="0"
+                                           Height="20"/>
+                                <ProgressBar Grid.Row="1"
+                                             Height="5"
+                                             Minimum="0"
+                                             Maximum="{Binding TotalSize}"
+                                             Value="{Binding FillSize, Mode=OneWay}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <GridSplitter Grid.Column="1"
+                              Margin="1,0,1,0"
+                              Width="2"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Stretch"/>
+                <DataGrid Grid.Column="2"
+                          Name="ContentDataGrid"
+                          Background="White"
+                          CanUserAddRows="False"
+                          CanUserResizeRows="False"
+                          GridLinesVisibility="None"
+                          AutoGenerateColumns="False"
+                          ItemsSource="{Binding Items}"
+                          SelectedItem="{Binding SelectedItem}"
+                          SelectionMode="Single"
+                          HorizontalAlignment="Stretch"
+                          IsReadOnly="True">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Открыть"
+                                      Command="{Binding OpenCommand}"
+                                      CommandParameter="{Binding SelectedItem.FullName}"/>
+                            <Separator />
+                            <MenuItem Header="Вырезать"
+                                      Command="{Binding CutCommand}"/>
+                            <MenuItem Header="Копировать"
+                                      Command="{Binding CopyCommand}"/>
+                            <MenuItem Header="Вставить"
+                                      Command="{Binding PasteCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="Удалить"
+                                      Command="{Binding RemoveCommand}"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick"
+                                      Command="{Binding OpenCommand}"
+                                      CommandParameter="{Binding SelectedItem.FullName}"/>
+                    </DataGrid.InputBindings>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя"
+                                            Binding="{Binding NameWithoutExtension}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
+                        <DataGridTextColumn Header="Тип"
+                                            Binding="{Binding DisplayType}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
+                        <DataGridTextColumn Header="Размер, KB"
+                                            Binding="{Binding Size, StringFormat=N0}"
+                                            ElementStyle="{StaticResource RightCell}"/>
+                        <DataGridTextColumn Header="Дата создания"
+                                            Binding="{Binding CreateDate}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
+                        <DataGridTextColumn Header="Дата изменения"
+                                            Binding="{Binding UpdateDate}"
+                                            ElementStyle="{StaticResource PaddingCell}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <GridSplitter Grid.Column="3"
+                              Margin="1,0,1,0"
+                              Width="2"
+                              VerticalAlignment="Stretch"
+                              HorizontalAlignment="Center" />
+                <Grid Grid.Column="4"
+                      HorizontalAlignment="Stretch">
+                    <Border BorderBrush="Gray" BorderThickness="1"/>
+                    <Grid Visibility="{Binding ShowInfo}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition Height="25"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Имя: "
+                                   Grid.Column="0" Grid.Row="0"
+                                   Margin="5,5,0,0"/>
+                        <TextBox Text="{Binding SelectedItemName}"
+                                 Grid.Column="1" Grid.Row="0"
+                                 Margin="5,5,5,0"/>
+                        <TextBlock Text="Путь: "
+                                   Grid.Column="0" Grid.Row="1"
+                                   Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedItem.FullName}"
+                                   Grid.Column="1" Grid.Row="1"
+                                   Margin="5,5,5,0"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="Тип: "
+                                   Grid.Column="0" Grid.Row="2"
+                                   Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedItem.DisplayType}"
+                                   Grid.Column="1" Grid.Row="2"
+                                   Margin="5,5,5,0"/>
+                        <TextBlock Text="Размер, KB: "
+                                   Grid.Column="0" Grid.Row="3"
+                                   Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedItem.ComputedSize, StringFormat=N0}"
+                                   Grid.Column="1" Grid.Row="3"
+                                   Margin="5,5,5,0"/>
+                        <TextBlock Text="Дата создания: "
+                                   Grid.Column="0" Grid.Row="4"
+                                   Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedItem.CreateDate}"
+                                   Grid.Column="1" Grid.Row="4"
+                                   Margin="5,5,5,0"/>
+                        <TextBlock Text="Дата изменения: "
+                                   Grid.Column="0" Grid.Row="5"
+                                   Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedItem.UpdateDate}"
+                                   Grid.Column="1" Grid.Row="5"
+                                   Margin="5,5,5,0"/>
+                        <TextBlock Text="Только чтение: "
+                                   Grid.Column="0" Grid.Row="6"
+                                   Margin="5,5,0,0"/>
+                        <CheckBox IsChecked="{Binding SelectedItemReadOnly}"
+                                  Grid.Column="1" Grid.Row="6"
+                                  Margin="5,5,5,0"/>
+                        <TextBlock Text="Скрытый: "
+                                   Grid.Column="0" Grid.Row="7"
+                                   Margin="5,5,0,0"/>
+                        <CheckBox IsChecked="{Binding SelectedItemHidden}"
+                                  Grid.Column="1" Grid.Row="7"
+                                  Margin="5,5,5,0"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
