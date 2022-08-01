@@ -25,7 +25,7 @@ public class MainViewModel : ViewModel
     /// <summary>Текущий заголовок.</summary>
     private string _Title;
 
-    /// <summary>Коллекция системных дисков.</summary>
+    /// <summary>Коллекция дисков.</summary>
     private ObservableCollection<CIDrive> _Drives;
 
     /// <summary>Коллекция элементов текущей директории.</summary>
@@ -51,7 +51,7 @@ public class MainViewModel : ViewModel
         set { _Title = value; OnPropertyChanged(); }
     }
 
-    /// <summary>Коллекция системных дисков.</summary>
+    /// <summary>Коллекция дисков.</summary>
     public ObservableCollection<CIDrive> Drives
     {
         get => _Drives;

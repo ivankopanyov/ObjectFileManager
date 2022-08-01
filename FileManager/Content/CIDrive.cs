@@ -1,29 +1,29 @@
 ﻿namespace FileManager.Content;
 
-/// <summary>Класс, описывающий системный диск.</summary>
+/// <summary>Класс, описывающий диск.</summary>
 public class CIDrive
 {
-    /// <summary>Системный диск, описываемый текущим классом.</summary>
+    /// <summary>Диск, описываемый текущим классом.</summary>
     private readonly DriveInfo _Drive;
 
-    /// <summary>Имя системного диска.</summary>
+    /// <summary>Имя диска.</summary>
     public string Name => _Drive.Name;
     
-    /// <summary>Размер системного диска.</summary>
+    /// <summary>Размер диска.</summary>
     public long? TotalSize => _Drive.IsReady ? _Drive.TotalSize / 1000 : null;
 
-    /// <summary>Занятое пространство на системном диске.</summary>
+    /// <summary>Занятое пространство на диске.</summary>
     public long? FillSize => _Drive.IsReady ? (_Drive.TotalSize - _Drive.TotalFreeSpace) / 1000 : null;
 
-    /// <summary>Свободное пространство на системном диске.</summary>
+    /// <summary>Свободное пространство на диске.</summary>
     public long? FreeSize => _Drive.IsReady ? _Drive.TotalFreeSpace / 1000 : null;
 
-    /// <summary>Инициализация объекта системного диска.</summary>
-    /// <param name="drive">Системный диск, описываемый текущим классом.</param>
+    /// <summary>Инициализация объекта диска.</summary>
+    /// <param name="drive">Диск, описываемый текущим классом.</param>
     public CIDrive(DriveInfo drive) => _Drive = drive;
 
-    /// <summary>Получение всех системных дисков.</summary>
-    /// <returns>Системные диски.</returns>
+    /// <summary>Получение всех дисков.</summary>
+    /// <returns>Диски.</returns>
     public static CIDrive[] GetDrives()
     {
         try

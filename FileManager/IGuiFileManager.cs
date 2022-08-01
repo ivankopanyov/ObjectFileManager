@@ -15,7 +15,7 @@ public interface IGuiFileManager
     /// <summary>Элементы текущей директории.</summary>
     DirectoryItem[] ItemsList { get; }
 
-    /// <summary>Системные диски.</summary>
+    /// <summary>Диски.</summary>
     CIDrive[] Drives { get; }
 
     /// <summary>Проверка налиция текущей директории.</summary>

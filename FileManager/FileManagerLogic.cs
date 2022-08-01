@@ -10,7 +10,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
     /// <summary>Навигатор по директориям.</summary>
     private readonly INavigator<string> _Navigator;
 
-    /// <summary>Системные диски.</summary>
+    /// <summary>Диски.</summary>
     private readonly CIDrive[] _Drives;
 
     /// <summary>Сервис вывода сообщений в пользотельский интерфейс.</summary>
@@ -37,7 +37,7 @@ public class FileManagerLogic : IGuiFileManager, IConsoleFileManager
         }
     }
 
-    /// <summary>Системные диски.</summary>
+    /// <summary>Диски.</summary>
     public CIDrive[] Drives => _Drives;
 
     /// <summary>Проверка налиция текущей директории.</summary>
